@@ -1,0 +1,185 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="001. Emoji Pop Animation">
+  <div class="screen">
+    <div data-emoji-area=""></div>
+    <button type="button" data-emoji-button="">クリック!</button>
+  </div>
+</Layout>
+
+<style>
+  .screen {
+    width: 100vw;
+    height: 100vh;
+    background-color: #1a0533;
+    overflow: hidden;
+    position: relative;
+  }
+  .bg-circle {
+    width: 320px;
+    height: 320px;
+    opacity: 0.5;
+    border-radius: 100%;
+    position: absolute;
+    background-color: var(--color);
+  }
+  button {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0.8rem 2.5rem;
+    font-family: "Noto Sans JP", sans-serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    background-color: #ff9f43;
+    border: none;
+    border-radius: calc(infinity * 1px);
+    cursor: pointer;
+    z-index: 2;
+    min-width: 320px;
+  }
+  :global([data-emoji-area] span) {
+    position: absolute;
+  }
+</style>
+
+<script>
+  // @ts-nocheck
+  import { gsap } from "gsap";
+  class PopAnimation {
+    constructor() {
+      this.emojis = [
+        "😀",
+        "😂",
+        "🥳",
+        "😍",
+        "🤩",
+        "🫠",
+        "🤡",
+        "💀",
+        "🥸",
+        "🤯",
+        "👻",
+        "😤",
+        "🤪",
+        "🥶",
+      ];
+      this.num = 150;
+      this.size = 50;
+      this.selector = {
+        area: document.querySelector("[data-emoji-area]"),
+        button: document.querySelector("[data-emoji-button]"),
+      };
+      this.placed = [];
+      this.init();
+      this._resizeTimer = null;
+      const observer = new ResizeObserver(() => {
+        clearTimeout(this._resizeTimer);
+        this._resizeTimer = setTimeout(() => this._reset(), 300);
+      });
+      observer.observe(document.body);
+    }
+    init() {
+      console.log(this.selector.button);
+      this.selector.button.addEventListener("click", () => {
+        if (this.selector.button.getAttribute("data-emoji-button") === "init") {
+          this._removeHtml();
+        } else {
+          this._setHTML();
+        }
+      });
+    }
+
+    _getRandomPosition() {
+      const maxTries = 60;
+      for (let i = 0; i < maxTries; i++) {
+        const x = Math.random() * (window.innerWidth - this.size);
+        const y = Math.random() * (window.innerHeight - this.size);
+        const overlap = this.placed.some(
+          (p) => Math.abs(p.x - x) < this.size && Math.abs(p.y - y) < this.size,
+        );
+        if (!overlap) {
+          this.placed.push({ x, y });
+          return { x, y };
+        }
+      }
+      return null;
+    }
+
+    _setHTML() {
+      this.selector.button.disabled = true;
+      this.selector.button.innerText = "リセット!";
+      this.selector.button.setAttribute("data-emoji-button", "init");
+      for (let index = 0; index < this.num; index++) {
+        const pos = this._getRandomPosition();
+        if (!pos) continue;
+        const el = document.createElement("span");
+        el.textContent =
+          this.emojis[Math.floor(Math.random() * this.emojis.length)];
+        this.selector.area.appendChild(el);
+        const tl = gsap.timeline();
+        tl.set(el, {
+          opacity: 0,
+          scale: 0,
+          fontSize: this.size,
+          transform: `translate(${pos.x}px, ${pos.y}px)`,
+        }).fromTo(
+          el,
+          {
+            opacity: 0,
+            scale: 0,
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.2,
+            ease: "back.out(2)",
+            delay: Math.random() * 1.5,
+            onComplete: () => {
+              if (index === this.num - 1) {
+                this.selector.button.disabled = false;
+              }
+            },
+          },
+        );
+      }
+    }
+    _removeHtml() {
+      this.selector.button.disabled = true;
+      const items = document.querySelectorAll("span");
+      this.selector.button.setAttribute("data-emoji-button", "");
+      gsap.to(items, {
+        opacity: 0,
+        y: "+=300",
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "power2.in",
+        onComplete: () => {
+          this.selector.area.innerHTML = "";
+          this.placed = [];
+          this.selector.button.innerText = "クリック!";
+          this.selector.button.disabled = false;
+        },
+      });
+    }
+
+    _reset() {
+      gsap.to(document.querySelectorAll("span"), {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.in",
+        onComplete: () => {
+          this.selector.button.disabled = false;
+          this.selector.button.innerText = "クリック!";
+          this.selector.button.setAttribute("data-emoji-button", "");
+          this.selector.area.innerHTML = "";
+          this.placed = [];
+        },
+      });
+    }
+  }
+  new PopAnimation();
+</script>
