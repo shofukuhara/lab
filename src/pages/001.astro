@@ -68,22 +68,18 @@ import Layout from "../layouts/Layout.astro";
         "🥶",
       ];
       this.num = 150;
-      this.size = 50;
+      this.size = 60;
       this.selector = {
         area: document.querySelector("[data-emoji-area]"),
         button: document.querySelector("[data-emoji-button]"),
       };
       this.placed = [];
-      this.init();
       this._resizeTimer = null;
-      const observer = new ResizeObserver(() => {
-        clearTimeout(this._resizeTimer);
-        this._resizeTimer = setTimeout(() => this._reset(), 300);
-      });
-      observer.observe(document.body);
+      this.init();
+      this._initResize();
     }
+
     init() {
-      console.log(this.selector.button);
       this.selector.button.addEventListener("click", () => {
         if (this.selector.button.getAttribute("data-emoji-button") === "init") {
           this._removeHtml();
@@ -91,6 +87,14 @@ import Layout from "../layouts/Layout.astro";
           this._setHTML();
         }
       });
+    }
+
+    _initResize() {
+      const observer = new ResizeObserver(() => {
+        clearTimeout(this._resizeTimer);
+        this._resizeTimer = setTimeout(() => this._reset(), 300);
+      });
+      observer.observe(document.body);
     }
 
     _getRandomPosition() {
@@ -138,14 +142,12 @@ import Layout from "../layouts/Layout.astro";
             duration: 0.2,
             ease: "back.out(2)",
             delay: Math.random() * 1.5,
-            onComplete: () => {
-              if (index === this.num - 1) {
-                this.selector.button.disabled = false;
-              }
-            },
           },
         );
       }
+      gsap.delayedCall(1.5 + 0.2, () => {
+        this.selector.button.disabled = false;
+      });
     }
     _removeHtml() {
       this.selector.button.disabled = true;
@@ -169,7 +171,7 @@ import Layout from "../layouts/Layout.astro";
     _reset() {
       gsap.to(document.querySelectorAll("span"), {
         opacity: 0,
-        duration: 0.5,
+        duration: 0.3,
         ease: "power2.in",
         onComplete: () => {
           this.selector.button.disabled = false;
