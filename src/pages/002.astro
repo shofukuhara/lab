@@ -15,6 +15,10 @@ const photos = [
 <Layout title="002. Scroll ImageAnimation">
   <section class="fv">
     <h1>Scroll ImageAnimation</h1>
+    <div class="box">
+      <span class="text">Scroll</span>
+      <span class="line"></span>
+    </div>
   </section>
   <section class="section">
     <div class="track" data-scroll-track="">
@@ -49,6 +53,44 @@ const photos = [
     align-items: center;
     background-color: #000;
     color: #fff;
+    position: relative;
+  }
+  .box {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .line {
+    width: 1px;
+    height: 40px;
+    display: block;
+    background-color: #fff;
+
+    animation: scroll 2s infinite;
+  }
+  @keyframes scroll {
+    0% {
+      transform: scale(1, 0);
+      transform-origin: 0 0;
+    }
+    50% {
+      transform: scale(1, 1);
+      transform-origin: 0 0;
+    }
+    51% {
+      transform: scale(1, 1);
+      transform-origin: 0 100%;
+    }
+    100% {
+      transform: scale(1, 0);
+      transform-origin: 0 100%;
+    }
   }
   .section {
     overflow: clip;
@@ -111,6 +153,7 @@ const photos = [
     init() {
       this._setInitialPositions();
       this._initScrollTrigger();
+      this._initResizeHandler();
     }
 
     _setInitialPositions() {
@@ -120,8 +163,8 @@ const photos = [
       const listCenterY = listRect.top + listRect.height / 2;
       this.selector.images.forEach((image, index) => {
         const itemRect = this.selector.items[index].getBoundingClientRect();
-        const imageWidth = 300;
-        const imageHeight = 300;
+        const imageWidth = listRect.width / 4;
+        const imageHeight = listRect.width / 4;
         const imageX = listCenterX - (itemRect.left + imageWidth / 2);
         const imageY = listCenterY - (itemRect.top + imageHeight / 2);
         gsap.set(image, {
@@ -142,7 +185,7 @@ const photos = [
             start: "top top",
             end: "center top",
             scrub: true,
-            markers: true,
+            // markers: true,
           },
           x: "0px",
           y: "0px",
@@ -151,6 +194,24 @@ const photos = [
           ease: "none",
         });
       });
+    }
+
+    _debounce(fn, delay) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
+
+    _initResizeHandler() {
+      const onResize = this._debounce(() => {
+        ScrollTrigger.getAll().forEach((t) => t.kill());
+        this._setInitialPositions();
+        this._initScrollTrigger();
+      }, 200);
+
+      window.addEventListener("resize", onResize);
     }
   }
 
