@@ -37,6 +37,92 @@ const photos = [
       </div>
     </div>
   </section>
+  <script>
+    // @ts-nocheck
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+    gsap.registerPlugin(ScrollTrigger);
+
+    class ScrollImageAnimation {
+      constructor() {
+        this.count = 8;
+        this.radius = 500;
+        this.selector = {
+          track: document.querySelector("[data-scroll-track]"),
+          pin: document.querySelector("[data-scroll-pin]"),
+          items: document.querySelectorAll("[data-scroll-item]"),
+          images: document.querySelectorAll("[data-scroll-image]"),
+        };
+        this.init();
+      }
+
+      init() {
+        this._setInitialPositions();
+        this._initScrollTrigger();
+        this._initResizeHandler();
+      }
+
+      _setInitialPositions() {
+        const list = document.querySelector("[data-scroll-list]");
+        const listRect = list.getBoundingClientRect();
+        const listCenterX = listRect.left + listRect.width / 2;
+        const listCenterY = listRect.top + listRect.height / 2;
+        this.selector.images.forEach((image, index) => {
+          const itemRect = this.selector.items[index].getBoundingClientRect();
+          const imageWidth = listRect.width / 4;
+          const imageHeight = listRect.width / 4;
+          const imageX = listCenterX - (itemRect.left + imageWidth / 2);
+          const imageY = listCenterY - (itemRect.top + imageHeight / 2);
+          gsap.set(image, {
+            x: imageX,
+            y: imageY,
+            width: imageWidth + "px",
+            height: imageHeight + "px",
+          });
+        });
+      }
+
+      _initScrollTrigger() {
+        this.selector.images.forEach((image, index) => {
+          const itemRect = this.selector.items[index].getBoundingClientRect();
+          gsap.to(image, {
+            scrollTrigger: {
+              trigger: this.selector.track,
+              start: "top top",
+              end: "center top",
+              scrub: true,
+              // markers: true,
+            },
+            x: "0px",
+            y: "0px",
+            width: itemRect.width,
+            height: itemRect.height,
+            ease: "none",
+          });
+        });
+      }
+
+      _debounce(fn, delay) {
+        let timer;
+        return (...args) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fn.apply(this, args), delay);
+        };
+      }
+
+      _initResizeHandler() {
+        const onResize = this._debounce(() => {
+          ScrollTrigger.getAll().forEach((t) => t.kill());
+          this._setInitialPositions();
+          this._initScrollTrigger();
+        }, 200);
+
+        window.addEventListener("resize", onResize);
+      }
+    }
+
+    new ScrollImageAnimation();
+  </script>
 </Layout>
 
 <style>
@@ -130,90 +216,3 @@ const photos = [
     object-fit: cover;
   }
 </style>
-
-<script>
-  // @ts-nocheck
-  import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
-  gsap.registerPlugin(ScrollTrigger);
-
-  class ScrollImageAnimation {
-    constructor() {
-      this.count = 8;
-      this.radius = 500;
-      this.selector = {
-        track: document.querySelector("[data-scroll-track]"),
-        pin: document.querySelector("[data-scroll-pin]"),
-        items: document.querySelectorAll("[data-scroll-item]"),
-        images: document.querySelectorAll("[data-scroll-image]"),
-      };
-      this.init();
-    }
-
-    init() {
-      this._setInitialPositions();
-      this._initScrollTrigger();
-      this._initResizeHandler();
-    }
-
-    _setInitialPositions() {
-      const list = document.querySelector("[data-scroll-list]");
-      const listRect = list.getBoundingClientRect();
-      const listCenterX = listRect.left + listRect.width / 2;
-      const listCenterY = listRect.top + listRect.height / 2;
-      this.selector.images.forEach((image, index) => {
-        const itemRect = this.selector.items[index].getBoundingClientRect();
-        const imageWidth = listRect.width / 4;
-        const imageHeight = listRect.width / 4;
-        const imageX = listCenterX - (itemRect.left + imageWidth / 2);
-        const imageY = listCenterY - (itemRect.top + imageHeight / 2);
-        gsap.set(image, {
-          x: imageX,
-          y: imageY,
-          width: imageWidth + "px",
-          height: imageHeight + "px",
-        });
-      });
-    }
-
-    _initScrollTrigger() {
-      this.selector.images.forEach((image, index) => {
-        const itemRect = this.selector.items[index].getBoundingClientRect();
-        gsap.to(image, {
-          scrollTrigger: {
-            trigger: this.selector.track,
-            start: "top top",
-            end: "center top",
-            scrub: true,
-            // markers: true,
-          },
-          x: "0px",
-          y: "0px",
-          width: itemRect.width,
-          height: itemRect.height,
-          ease: "none",
-        });
-      });
-    }
-
-    _debounce(fn, delay) {
-      let timer;
-      return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => fn.apply(this, args), delay);
-      };
-    }
-
-    _initResizeHandler() {
-      const onResize = this._debounce(() => {
-        ScrollTrigger.getAll().forEach((t) => t.kill());
-        this._setInitialPositions();
-        this._initScrollTrigger();
-      }, 200);
-
-      window.addEventListener("resize", onResize);
-    }
-  }
-
-  new ScrollImageAnimation();
-</script>

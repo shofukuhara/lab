@@ -13,10 +13,91 @@ import Layout from "../layouts/Layout.astro";
     <h2>Content</h2>
   </section>
   <dialog>
-    <button class="button" data-modal-close="" aria-label="モーダルを閉じる"
-      >✕</button
+    <h2>Modal</h2>
+    <button
+      class="button"
+      data-modal-close=""
+      aria-label="モーダルを閉じる"
+      style="pointer-events: none;">✕</button
     >
   </dialog>
+  <script>
+    // @ts-nocheck
+    import { gsap } from "gsap";
+    class DialogControl {
+      constructor() {
+        this.button = {
+          open: document.querySelector("[data-modal-open]"),
+          close: document.querySelector("[data-modal-close]"),
+        };
+        this.dialog = document.querySelector("dialog");
+        this.init();
+      }
+
+      init() {
+        this.button.open.addEventListener("click", () => {
+          this._open();
+          this._lockScroll();
+        });
+        this.button.close.addEventListener("click", () => {
+          this._close();
+          this._unlockScroll();
+        });
+
+        this._esc();
+      }
+
+      _open() {
+        this.dialog.showModal();
+        this.button.open.setAttribute("aria-expanded", "true");
+        gsap.to(this.dialog, {
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+          onComplete: () => {
+            this.button.close.style.pointerEvents = "auto";
+            this.button.close.focus();
+          },
+        });
+      }
+
+      _close() {
+        this.button.open.setAttribute("aria-expanded", "false");
+        this.button.close.style.pointerEvents = "none";
+        gsap.to(this.dialog, {
+          opacity: 0,
+          duration: 0.3,
+          ease: "power2.out",
+          onComplete: () => {
+            this.dialog.close();
+          },
+        });
+      }
+
+      _lockScroll() {
+        this._scrollY = window.scrollY;
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${this._scrollY}px`;
+        document.body.style.width = "100%";
+      }
+
+      _unlockScroll() {
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        window.scrollTo(0, this._scrollY);
+      }
+
+      _esc() {
+        this.dialog.addEventListener("cancel", (e) => {
+          e.preventDefault();
+          this._close();
+        });
+      }
+    }
+
+    new DialogControl();
+  </script>
 </Layout>
 
 <style>
@@ -24,6 +105,7 @@ import Layout from "../layouts/Layout.astro";
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    overflow-y: scroll;
   }
   .fv {
     width: 100%;
@@ -79,56 +161,13 @@ import Layout from "../layouts/Layout.astro";
     height: 100vh;
     max-width: 100%;
     max-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
   }
   dialog {
     opacity: 0;
   }
 </style>
-
-<script>
-  // @ts-nocheck
-  import { gsap } from "gsap";
-  class DialogControl {
-    constructor() {
-      this.button = {
-        open: document.querySelector("[data-modal-open]"),
-        close: document.querySelector("[data-modal-close]"),
-      };
-      this.dialog = document.querySelector("dialog");
-      this.init();
-    }
-
-    init() {
-      this.button.open.addEventListener("click", () => {
-        this._open();
-      });
-      this.button.close.addEventListener("click", () => {
-        this._close();
-      });
-    }
-
-    _open() {
-      this.dialog.showModal();
-      this.button.open.setAttribute("aria-expanded", "true");
-      gsap.to(this.dialog, {
-        opacity: 1,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    }
-
-    _close() {
-      this.button.open.setAttribute("aria-expanded", "false");
-      gsap.to(this.dialog, {
-        opacity: 0,
-        duration: 0.3,
-        ease: "power2.out",
-        onComplete: () => {
-          this.dialog.close();
-        },
-      });
-    }
-  }
-
-  new DialogControl();
-</script>
