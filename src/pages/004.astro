@@ -1,0 +1,273 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="004. Embla Carousel">
+  <h1>Embla Carousel</h1>
+  <div class="list">
+    <div class="item">
+      <h2>デフォルト</h2>
+      <ul>
+        <li>ボタンなし</li>
+        <li>ループあり</li>
+        <li>余白あり</li>
+      </ul>
+      <div class="embla embla--default">
+        <div class="embla__viewport">
+          <div class="embla__container">
+            <div class="embla__slide">
+              <div class="inner">1</div>
+            </div>
+            <div class="embla__slide">
+              <div class="inner">2</div>
+            </div>
+            <div class="embla__slide">
+              <div class="inner">3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <h2>前へ＆次へボタン</h2>
+      <ul>
+        <li>ボタンあり</li>
+        <li>ループなし</li>
+        <li>余白あり</li>
+      </ul>
+      <div class="embla embla--prev-next">
+        <div class="embla__viewport">
+          <div class="embla__container">
+            <div class="embla__slide">
+              <div class="inner">1</div>
+            </div>
+            <div class="embla__slide">
+              <div class="inner">2</div>
+            </div>
+            <div class="embla__slide">
+              <div class="inner">3</div>
+            </div>
+          </div>
+        </div>
+        <div class="embla__wrap">
+          <button class="embla__button embla__prev">prev</button>
+          <button class="embla__button embla__next">next</button>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <h2>ドットボタン</h2>
+      <ul>
+        <li>ボタンあり</li>
+        <li>ループあり</li>
+        <li>余白あり</li>
+      </ul>
+      <div class="embla embla--dots">
+        <div class="embla__viewport">
+          <div class="embla__container">
+            <div class="embla__slide">
+              <div class="inner">1</div>
+            </div>
+            <div class="embla__slide">
+              <div class="inner">2</div>
+            </div>
+            <div class="embla__slide">
+              <div class="inner">3</div>
+            </div>
+          </div>
+        </div>
+        <div class="embla__dots"></div>
+      </div>
+    </div>
+    <script>
+      // @ts-nocheck
+      import EmblaCarousel from "embla-carousel";
+
+      class Carousel01 {
+        constructor() {
+          this.emblaNode = document.querySelector(".embla--default");
+          this.emblaWrapper = this.emblaNode.querySelector(".embla__viewport");
+          EmblaCarousel(this.emblaWrapper, {
+            loop: true,
+            containScroll: false,
+          });
+        }
+      }
+      class Carousel02 {
+        constructor() {
+          this.emblaNode = document.querySelector(".embla--prev-next");
+          this.emblaWrapper = this.emblaNode.querySelector(".embla__viewport");
+          this.prevButton = this.emblaNode.querySelector(".embla__prev");
+          this.nextButton = this.emblaNode.querySelector(".embla__next");
+          this._init();
+        }
+
+        _init() {
+          this.emblaApi = EmblaCarousel(this.emblaWrapper);
+          this._moveButton();
+          this._updateButtons();
+          this.emblaApi.on("select", () => this._updateButtons());
+        }
+
+        _moveButton() {
+          this.prevButton.addEventListener("click", () => {
+            this.emblaApi.scrollPrev();
+          });
+          this.nextButton.addEventListener("click", () => {
+            this.emblaApi.scrollNext();
+          });
+        }
+
+        _updateButtons() {
+          this.prevButton.disabled = !this.emblaApi.canScrollPrev();
+          this.nextButton.disabled = !this.emblaApi.canScrollNext();
+        }
+      }
+      class Carousel03 {
+        constructor() {
+          this.emblaNode = document.querySelector(".embla--dots");
+          this.emblaWrapper = this.emblaNode.querySelector(".embla__viewport");
+          this.dotsButton = this.emblaNode.querySelector(".embla__dots");
+          this._init();
+        }
+
+        _init() {
+          this.emblaApi = EmblaCarousel(this.emblaWrapper, {
+            loop: true,
+          });
+          this._createDots();
+        }
+
+        _createDots() {
+          this.dots = this.emblaApi.scrollSnapList().map((_, i) => {
+            const btn = document.createElement("button");
+            btn.classList.add("embla__dot");
+            btn.addEventListener("click", () => this.emblaApi.scrollTo(i));
+            this.dotsButton.append(btn);
+            return btn;
+          });
+        }
+      }
+      new Carousel01();
+      new Carousel02();
+      new Carousel03();
+    </script>
+  </div>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      overflow-y: scroll;
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    h1 {
+      position: absolute;
+      top: 24px;
+      left: 0;
+      margin: 0;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+    }
+
+    ul {
+      margin: 0 0 20px;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      gap: 8px;
+    }
+
+    ul li {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      background: #f0f0f0;
+      color: #555;
+    }
+
+    .list {
+      padding: 100px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 80px;
+    }
+
+    .item {
+      border-top: 1px solid #e8e8e8;
+      padding-top: 28px;
+    }
+
+    /* embla ベース */
+    .embla {
+      --slide-size: 100%;
+      --slide-gap: 12px;
+      max-width: 640px;
+    }
+
+    .embla__viewport {
+      overflow: hidden;
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .embla__container {
+      display: flex;
+      /* gap: var(--slide-gap); */
+    }
+
+    .embla__slide {
+      position: relative;
+      flex: 0 0 var(--slide-size);
+      min-width: 0;
+      padding-right: calc(var(--slide-gap) / 2);
+      padding-left: calc(var(--slide-gap) / 2);
+    }
+
+    .embla__slide .inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 320px;
+      background-color: #f4f4f4;
+      border-radius: 8px;
+      font-size: 56px;
+      font-weight: 300;
+      color: #bbb;
+      user-select: none;
+    }
+
+    .embla__wrap {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .embla__dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 12px;
+      > .embla__dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #ddd;
+        border: none;
+        cursor: pointer;
+      }
+    }
+  </style>
+</Layout>
