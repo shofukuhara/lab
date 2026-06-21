@@ -1,0 +1,124 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"button"> {
+  variant?: "primary" | "secondary" | "ghost";
+  size?: "sm" | "md" | "lg";
+}
+
+const {
+  variant = "primary",
+  size = "md",
+  type = "button",
+  disabled = false,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<button
+  type={type}
+  disabled={disabled}
+  class:list={[
+    "c-button",
+    `c-button--${variant}`,
+    `c-button--${size}`,
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</button>
+
+<style>
+  .c-button {
+    display: inline-block;
+    font-family: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.1s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .c-button:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  .c-button:focus-visible {
+    outline: 2px solid var(--c-button-focus, #2563eb);
+    outline-offset: 2px;
+  }
+
+  .c-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* サイズ */
+  .c-button--sm {
+    padding: 0.5em 1em;
+    font-size: 14px;
+  }
+
+  .c-button--md {
+    padding: 0.75em 1.5em;
+    font-size: 16px;
+  }
+
+  .c-button--lg {
+    padding: 0.875em 2em;
+    font-size: 18px;
+  }
+
+  /* バリエーション */
+  .c-button--primary {
+    background-color: #2563eb;
+    color: #fff;
+  }
+
+  .c-button--primary:hover:not(:disabled) {
+    background-color: #1d4ed8;
+  }
+
+  .c-button--secondary {
+    background-color: #fff;
+    color: #2563eb;
+    border: 1px solid #2563eb;
+  }
+
+  .c-button--secondary:hover:not(:disabled) {
+    background-color: #eff6ff;
+  }
+
+  .c-button--ghost {
+    background-color: transparent;
+    color: #2563eb;
+  }
+
+  .c-button--other {
+    background-color: #ff9f43;
+    color: #555;
+  }
+
+  .c-button--other:hover:not(:disabled) {
+    background-color: #fff;
+  }
+
+  .c-button--other:focus-visible {
+    outline: 2px solid var(--c-button-focus, #fff);
+    outline-offset: 2px;
+  }
+
+  .c-button--ghost:hover:not(:disabled) {
+    background-color: #eff6ff;
+  }
+</style>

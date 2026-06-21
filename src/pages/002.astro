@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Title from "../components/ui/Title.astro";
 const photos = [
   "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
   "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
@@ -14,7 +15,11 @@ const photos = [
 
 <Layout title="002. Scroll ImageAnimation">
   <section class="fv">
-    <h1>Scroll ImageAnimation</h1>
+    <Title
+      title="Scroll ImageAnimation"
+      tags={["js", "gsap", "scrolltrigger"]}
+      className="c-title__white c-title__other"
+    />
     <div class="box">
       <span class="text">Scroll</span>
       <span class="line"></span>

@@ -1,0 +1,89 @@
+---
+import Title from "../components/ui/Title.astro";
+import Button from "../components/ui/Button.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="006. Text Scramble">
+  <Title
+    title="Text Scramble"
+    tags={["js", "typescript", "text", "animation", "gsap"]}
+  />
+  <p class="text" data-scramble-text="">Text Scramble Animation</p>
+  <div class="button">
+    <Button type="button" data-scramble-button="">テキストを切り替える</Button>
+  </div>
+</Layout>
+<script>
+  import { gsap } from "gsap";
+  import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
+  gsap.registerPlugin(ScrambleTextPlugin);
+  class TextScramble {
+    text: HTMLParagraphElement;
+    button: HTMLButtonElement;
+    constructor() {
+      const selector = {
+        text: document.querySelector<HTMLParagraphElement>(
+          "[data-scramble-text]",
+        ),
+        button: document.querySelector<HTMLButtonElement>(
+          "[data-scramble-button]",
+        ),
+      };
+
+      if (!selector.text || !selector.button) {
+        throw new Error("Required elements not found");
+      }
+
+      this.text = selector.text;
+      this.button = selector.button;
+      this.init();
+    }
+
+    init() {
+      this.button.addEventListener("click", () => {
+        this.animation();
+      });
+    }
+
+    animation() {
+      const currentText = this.text.textContent || "Text Scramble Animation";
+
+      gsap.to(this.text, {
+        duration: 0.5,
+        scrambleText: {
+          text: currentText,
+          chars:
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+          revealDelay: 0.1,
+          speed: 0.2,
+        },
+      });
+    }
+  }
+  new TextScramble();
+</script>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    padding: 0 16px 32px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .text {
+    font-size: 40px;
+    text-align: center;
+    margin-top: 100px;
+  }
+  .button {
+    display: block;
+    width: fit-content;
+    margin-top: 40px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>

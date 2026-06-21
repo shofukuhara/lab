@@ -1,9 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Title from "../components/ui/Title.astro";
 ---
 
 <Layout title="004. Embla Carousel">
-  <h1>Embla Carousel</h1>
+  <Title title="Embla Carousel" tags={["js", "carousel", "embla", "library"]} />
   <div class="list">
     <div class="item">
       <h2>デフォルト</h2>
@@ -146,6 +147,9 @@ import Layout from "../layouts/Layout.astro";
             this.dotsButton.append(btn);
             return btn;
           });
+          const add = (a, b) => {
+            return a + b;
+          };
         }
       }
       new Carousel01();
@@ -153,121 +157,118 @@ import Layout from "../layouts/Layout.astro";
       new Carousel03();
     </script>
   </div>
-
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      overflow-y: scroll;
-      max-width: 1000px;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    h1 {
-      position: absolute;
-      top: 24px;
-      left: 0;
-      margin: 0;
-    }
-
-    h2 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #888;
-    }
-
-    ul {
-      margin: 0 0 20px;
-      padding: 0;
-      list-style: none;
-      display: flex;
-      gap: 8px;
-    }
-
-    ul li {
-      font-size: 12px;
-      padding: 3px 10px;
-      border-radius: 99px;
-      background: #f0f0f0;
-      color: #555;
-    }
-
-    .list {
-      padding: 100px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 80px;
-    }
-
-    .item {
-      border-top: 1px solid #e8e8e8;
-      padding-top: 28px;
-    }
-
-    /* embla ベース */
-    .embla {
-      --slide-size: 100%;
-      --slide-gap: 12px;
-      max-width: 640px;
-    }
-
-    .embla__viewport {
-      overflow: hidden;
-      width: 100%;
-      border-radius: 8px;
-    }
-
-    .embla__container {
-      display: flex;
-      /* gap: var(--slide-gap); */
-    }
-
-    .embla__slide {
-      position: relative;
-      flex: 0 0 var(--slide-size);
-      min-width: 0;
-      padding-right: calc(var(--slide-gap) / 2);
-      padding-left: calc(var(--slide-gap) / 2);
-    }
-
-    .embla__slide .inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 320px;
-      background-color: #f4f4f4;
-      border-radius: 8px;
-      font-size: 56px;
-      font-weight: 300;
-      color: #bbb;
-      user-select: none;
-    }
-
-    .embla__wrap {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .embla__dots {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 12px;
-      > .embla__dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background-color: #ddd;
-        border: none;
-        cursor: pointer;
-      }
-    }
-  </style>
 </Layout>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    padding: 0 16px 32px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+  }
+
+  ul {
+    margin: 0 0 20px;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    gap: 8px;
+  }
+
+  ul li {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: #f0f0f0;
+    color: #555;
+  }
+
+  .list {
+    padding: 0px 0px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+
+  .item {
+    border-top: 1px solid #e5e5e5;
+    padding-top: 28px;
+    &:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+  }
+
+  /* embla ベース */
+  .embla {
+    --slide-size: 100%;
+    --slide-gap: 12px;
+    max-width: 640px;
+  }
+
+  .embla__viewport {
+    overflow: hidden;
+    width: 100%;
+    border-radius: 8px;
+  }
+
+  .embla__container {
+    display: flex;
+    /* gap: var(--slide-gap); */
+  }
+
+  .embla__slide {
+    position: relative;
+    flex: 0 0 var(--slide-size);
+    min-width: 0;
+    padding-right: calc(var(--slide-gap) / 2);
+    padding-left: calc(var(--slide-gap) / 2);
+  }
+
+  .embla__slide .inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 320px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    font-size: 56px;
+    font-weight: 300;
+    color: #bbb;
+    user-select: none;
+  }
+
+  .embla__wrap {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .embla__dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    > .embla__dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #ddd;
+      border: none;
+      cursor: pointer;
+    }
+  }
+</style>

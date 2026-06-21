@@ -1,0 +1,50 @@
+---
+import Title from "../components/ui/Title.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="005. Grid Layout rule">
+  <Title
+    title="Grid Layout rule"
+    annotation="※Chrome・Edge 149以上"
+    tags={["css", "grid", "layout"]}
+  />
+  <div class="grid">
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+  </div>
+</Layout>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    padding: 0 16px 32px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    rule: 2px solid #2563eb;
+    gap: 2px;
+    border: 2px solid #2563eb;
+  }
+  .item {
+    background-color: #f0f0f0;
+    aspect-ratio: 1/1;
+  }
+</style>

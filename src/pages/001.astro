@@ -1,11 +1,22 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Button from "../components/ui/Button.astro";
+import Title from "../components/ui/Title.astro";
 ---
 
 <Layout title="001. Emoji Pop Animation">
   <div class="screen">
+    <Title
+      title="Emoji Pop Animation"
+      tags={["js", "gsap", "animation"]}
+      className="c-title__white c-title__other"
+    />
     <div data-emoji-area=""></div>
-    <button type="button" data-emoji-button="">クリック!</button>
+    <Button
+      type="button"
+      class:list={["c-button--other", "c-button--lg"]}
+      data-emoji-button="">クリック!</Button
+    >
   </div>
   <script>
     // @ts-nocheck
@@ -115,13 +126,13 @@ import Layout from "../layouts/Layout.astro";
       }
       _removeHtml() {
         this.selector.button.disabled = true;
-        const items = document.querySelectorAll("span");
+        const items = document.querySelectorAll("[data-emoji-area] span");
         this.selector.button.setAttribute("data-emoji-button", "");
         gsap.to(items, {
           opacity: 0,
           y: "+=300",
           duration: 0.5,
-          stagger: 0.1,
+          stagger: 0.01,
           ease: "power2.in",
           onComplete: () => {
             this.selector.area.innerHTML = "";
@@ -133,7 +144,7 @@ import Layout from "../layouts/Layout.astro";
       }
 
       _reset() {
-        gsap.to(document.querySelectorAll("span"), {
+        gsap.to(document.querySelectorAll("[data-emoji-area] span"), {
           opacity: 0,
           duration: 0.3,
           ease: "power2.in",
@@ -152,6 +163,10 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
   .screen {
     width: 100vw;
     height: 100vh;
@@ -159,29 +174,15 @@ import Layout from "../layouts/Layout.astro";
     overflow: hidden;
     position: relative;
   }
-  .bg-circle {
-    width: 320px;
-    height: 320px;
-    opacity: 0.5;
-    border-radius: 100%;
-    position: absolute;
-    background-color: var(--color);
-  }
   button {
     position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 0.8rem 2.5rem;
-    font-family: "Noto Sans JP", sans-serif;
-    font-size: 1.4rem;
-    font-weight: 400;
-    background-color: #ff9f43;
-    border: none;
-    border-radius: calc(infinity * 1px);
+    bottom: 40px;
+    right: 0;
+    left: 0;
     cursor: pointer;
-    z-index: 2;
-    min-width: 320px;
+    z-index: 10;
+    margin: 0 auto;
+    width: fit-content;
   }
   :global([data-emoji-area] span) {
     position: absolute;
