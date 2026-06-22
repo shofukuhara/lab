@@ -1,0 +1,163 @@
+---
+import Title from "../components/ui/Title.astro";
+import Button from "../components/ui/Button.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="007. Hover Highlight Navigation">
+  <Title
+    title="Hover Highlight Navigation"
+    tags={["js", "typescript", "animation", "gsap"]}
+  />
+  <div class="list" data-hover-list="">
+    <div class="hover-bg" data-hover-bg=""></div>
+    <a href="#" class="item">
+      <p class="date">2024-06-12</p>
+      <p class="title">
+        Newsテキストがここに入ってきます。Newsテキストがここに入ってきます。
+      </p>
+    </a>
+    <a href="#" class="item">
+      <p class="date">2024-06-12</p>
+      <p class="title">
+        Newsテキストがここに入ってきます。Newsテキストがここに入ってきます。
+      </p>
+    </a>
+    <a href="#" class="item">
+      <p class="date">2024-06-12</p>
+      <p class="title">
+        Newsテキストがここに入ってきます。Newsテキストがここに入ってきます。
+      </p>
+    </a>
+    <a href="#" class="item">
+      <p class="date">2024-06-12</p>
+      <p class="title">
+        Newsテキストがここに入ってきます。Newsテキストがここに入ってきます。
+      </p>
+    </a>
+    <a href="#" class="item">
+      <p class="date">2024-06-12</p>
+      <p class="title">
+        Newsテキストがここに入ってきます。Newsテキストがここに入ってきます。
+      </p>
+    </a>
+    <a href="#" class="item">
+      <p class="date">2024-06-12</p>
+      <p class="title">
+        Newsテキストがここに入ってきます。Newsテキストがここに入ってきます。
+      </p>
+    </a>
+  </div>
+</Layout>
+<script>
+  import { gsap } from "gsap";
+  import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
+  gsap.registerPlugin(ScrambleTextPlugin);
+
+  class HoverHighlightNavigation {
+    private list: HTMLElement | null = null;
+    private bg: HTMLElement | null = null;
+    private links: NodeListOf<HTMLAnchorElement> | null = null;
+    private rect: HTMLElement | null = null;
+    private listRect: HTMLElement | null = null;
+    constructor() {
+      const list = document.querySelector<HTMLElement>("[data-hover-list]");
+      const bg = document.querySelector<HTMLElement>("[data-hover-bg]");
+
+      if (!list || !bg) return;
+
+      this.list = list;
+      this.bg = bg;
+      this.links = list.querySelectorAll("a");
+
+      this.bindEvents();
+    }
+
+    private bindEvents() {
+      this.links?.forEach((link) => {
+        link.addEventListener("mouseenter", () => {
+          const rect = link.getBoundingClientRect();
+          const listRect = this.list?.getBoundingClientRect();
+          if (!listRect) return;
+          this.animation(rect, listRect);
+        });
+      });
+      this.list?.addEventListener("mouseleave", () => this.hideBg());
+    }
+
+    private animation(rect: DOMRect, navRect: DOMRect) {
+      if (!this.bg) return;
+
+      gsap.to(this.bg, {
+        x: rect.left - (navRect?.left ?? 0),
+        y: rect.top - (navRect?.top ?? 0),
+        width: rect.width,
+        height: rect.height,
+        opacity: 1,
+        duration: 0.4,
+        ease: "power3.out",
+      });
+    }
+    private hideBg() {
+      if (!this.bg) return;
+      gsap.to(this.bg, { opacity: 0, duration: 0.3 });
+    }
+  }
+  new HoverHighlightNavigation();
+</script>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    padding: 0 16px 32px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .list {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 800px;
+    position: relative;
+  }
+
+  .hover-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 1;
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    gap: 32px;
+    padding: 16px 0;
+    border-bottom: 1px solid #e5e5e5;
+    text-decoration: none;
+  }
+
+  .item:first-child {
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .date {
+    font-size: 16px;
+    color: #888;
+    font-feature-settings: "tnum";
+  }
+
+  .title {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #111;
+  }
+</style>
