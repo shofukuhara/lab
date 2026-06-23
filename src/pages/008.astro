@@ -1,0 +1,111 @@
+---
+import Title from "../components/ui/Title.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="008. css @property">
+  <Title title="css @property" tags={["css", "property", "animation"]} />
+  <div class="list">
+    <div class="item">
+      <p class="title">Gradation Hover Rotate</p>
+      <div class="box box--01"></div>
+    </div>
+    <div class="item">
+      <p class="title">Progress Circle</p>
+      <div class="box box--02"></div>
+    </div>
+  </div>
+</Layout>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    padding: 0 16px 32px;
+    margin: 0 auto;
+    position: relative;
+  }
+  @property --rotate {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+  @property --progress {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 0%;
+  }
+  .list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+  .title {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+  }
+  .item + .item {
+    border-top: 1px solid #e5e5e5;
+    padding-top: 28px;
+    &:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+  }
+  .box {
+    max-width: 300px;
+    aspect-ratio: 1/1;
+    border-radius: 16px;
+    margin-top: 16px;
+    &.box--01 {
+      --rotate: 0deg;
+      background: linear-gradient(var(--rotate), #fff, #1600ff);
+      &:hover {
+        animation: rotate 2s linear infinite;
+      }
+    }
+
+    &.box--02 {
+      --progress: 100%;
+
+      position: relative;
+      width: 300px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+
+      background: conic-gradient(
+        #1600ff 0 var(--progress),
+        #ddd var(--progress) 100%
+      );
+
+      animation: progress 3s ease infinite;
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 20px;
+        border-radius: inherit;
+        background: white;
+      }
+    }
+  }
+  @keyframes progress {
+    from {
+      --progress: 0%;
+    }
+
+    to {
+      --progress: 100%;
+    }
+  }
+  @keyframes rotate {
+    to {
+      --rotate: 360deg;
+    }
+  }
+</style>
