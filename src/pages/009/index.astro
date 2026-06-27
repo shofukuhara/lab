@@ -1,0 +1,77 @@
+---
+import { fade } from "astro:transitions";
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+import { articles } from "../../pages/009/data.ts";
+---
+
+<Layout title="009. View Transition API">
+  <Title
+    title="View Transition API"
+    tags={["js", "web", "api", "transition"]}
+  />
+  <div class="list">
+    {
+      articles.map((article) => (
+        <a class="card" href={`/009/${article.slug}`}>
+          <div class="thum">
+            <img
+              src={article.image}
+              alt={article.title}
+              transition:name={`image-${article.slug}`}
+              transition:animate={fade()}
+            />
+          </div>
+          <div class="body">
+            <h2 class="title" transition:name={`title-${article.slug}`}>
+              {article.title}
+            </h2>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</Layout>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    padding: 0 16px 32px;
+    margin: 0 auto;
+    position: relative;
+  }
+  a {
+    display: block;
+    text-decoration: none;
+    color: #000;
+  }
+  .list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .thum {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16/9;
+  }
+  img {
+    aspect-ratio: 16/9;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .title {
+    margin-top: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+</style>

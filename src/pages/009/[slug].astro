@@ -1,0 +1,75 @@
+---
+import { fade } from "astro:transitions";
+import Button from "../../components/ui/Button.astro";
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+import { articles } from "../../pages/009/data.ts";
+
+export function getStaticPaths() {
+  return articles.map((article) => ({
+    params: {
+      slug: article.slug,
+    },
+    props: {
+      article,
+    },
+  }));
+}
+
+const { article } = Astro.props;
+---
+
+<Layout title={article.title}>
+  <Title
+    title="View Transition API"
+    tags={["js", "web", "api", "transition"]}
+  />
+  <div class="head">
+    <div class="thum">
+      <img
+        src={article.image}
+        alt={article.title}
+        transition:name={`image-${article.slug}`}
+        transition:animate={fade()}
+      />
+    </div>
+
+    <h1 transition:name={`title-${article.slug}`}>
+      {article.title}
+    </h1>
+  </div>
+  <div class="button">
+    <Button href="/009/">戻る</Button>
+  </div>
+</Layout>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    padding: 0 16px 32px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .head {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .thum {
+    aspect-ratio: 16 / 9;
+  }
+
+  .thum img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .button {
+    width: fit-content;
+    display: block;
+    margin: 40px auto 0;
+  }
+</style>

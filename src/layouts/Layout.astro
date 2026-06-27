@@ -1,5 +1,6 @@
 ---
 const { title = "lab" } = Astro.props;
+import { ClientRouter } from "astro:transitions";
 ---
 
 <!doctype html>
@@ -15,6 +16,7 @@ const { title = "lab" } = Astro.props;
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap"
       rel="stylesheet"
     />
+    <ClientRouter />
   </head>
   <body>
     <slot />
