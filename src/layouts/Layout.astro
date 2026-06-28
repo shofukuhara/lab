@@ -17,6 +17,7 @@ import { ClientRouter } from "astro:transitions";
       rel="stylesheet"
     />
     <ClientRouter />
+    <slot name="head" />
   </head>
   <body>
     <slot />

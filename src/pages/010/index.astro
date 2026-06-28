@@ -1,0 +1,157 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="010. dark mode">
+  <script slot="head" is:inline>
+    const theme = localStorage.getItem("theme") ?? "light";
+    document.documentElement.setAttribute("data-theme", theme);
+    document.querySelector("[data-theme-button]")?.setAttribute("data-theme-button", theme);
+  </script>
+  <Title title="dark mode" tags={["css", "javascript", "dark mode"]} />
+  <div class="screen">
+    <h1 class="title">Dark Mode Demo</h1>
+    <p class="text">
+      このカードは <span class="accent">light-dark()</span> + <span
+        class="accent">data-theme</span
+      > 属性で切り替わっています。ボタンでOS設定を上書きできます。<br>
+      localStorageに保存されるので、リロードしても状態は保持されます。
+    </p>
+    <button type="button" data-theme-button="" class="button"></button>
+  </div>
+</Layout>
+<script>
+  class DarkMode {
+    button!: HTMLButtonElement;
+
+    constructor() {
+      const button = document.querySelector<HTMLButtonElement>(
+        "[data-theme-button]",
+      );
+
+      if (!button) return;
+
+      this.button = button;
+      this.init();
+    }
+
+    init() {
+      const savedTheme = localStorage.getItem("theme") ?? "light";
+
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      this.button.setAttribute("data-theme-button", savedTheme);
+
+      this.buttonAction();
+    }
+
+    buttonAction() {
+      this.button.addEventListener("click", () => {
+        this.toggleTheme();
+      });
+    }
+
+    localStorageAction(theme: "light" | "dark") {
+      localStorage.setItem("theme", theme);
+    }
+
+    toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+
+      if (currentTheme === "light") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        this.button.setAttribute("data-theme-button", "dark");
+        this.localStorageAction("dark");
+      } else {
+        document.documentElement.setAttribute("data-theme", "light");
+        this.button.setAttribute("data-theme-button", "light");
+        this.localStorageAction("light");
+      }
+    }
+  }
+
+  new DarkMode();
+</script>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: light-dark(#ffffff, #0d0d0d);
+    --surface: light-dark(#f3f4f6, #1a1a1a);
+    --text: light-dark(#1e293b, #e2e8f0);
+    --muted: light-dark(#64748b, #a3a3a3);
+    --accent: light-dark(#2563eb, #60a5fa);
+    --border: light-dark(#e2e8f0, #2a2a2a);
+  }
+  :global([data-theme="dark"]) {
+    --bg: #0d0d0d;
+    --surface: #1a1a1a;
+    --text: #e2e8f0;
+    --muted: #a3a3a3;
+    --accent: #60a5fa;
+    --border: #2c2424;
+  }
+  :global([data-theme="light"]) {
+    --bg: #ffffff;
+    --surface: #f3f4f6;
+    --text: #1e293b;
+    --muted: #64748b;
+    --accent: #2563eb;
+    --border: #e2e8f0;
+  }
+  :global([data-theme-button="dark"].button::before) {
+    transform: translateX(22px) !important;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    padding: 0 16px 32px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .screen {
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .text {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .accent {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .button {
+    width: 46px;
+    height: 24px;
+    border-radius: 14px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    margin: 0;
+    padding: 0 2px;
+    &::before {
+      content: "";
+      display: block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      transform: translateX(1px);
+      transition: transform 0.2s;
+  }
+</style>
+
