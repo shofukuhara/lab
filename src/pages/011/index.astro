@@ -1,0 +1,65 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="011. Masonry Layout">
+  <Title
+    title="Masonry Layout"
+    tags={["css", "javascript", "masonry layout"]}
+    annotation="※Safari 26.4以降でのみ動作します。"
+  />
+  <div class="grid"></div>
+</Layout>
+<script>
+  class MasonryLayout {
+    grid!: HTMLDivElement;
+
+    constructor() {
+      const grid = document.querySelector<HTMLDivElement>(".grid");
+
+      if (!grid) return;
+
+      this.grid = grid;
+      this.init();
+    }
+
+    init() {
+      this.createItems();
+    }
+
+    createItems() {
+      for (let i = 0; i < 20; i++) {
+        const item = document.createElement("div");
+        item.classList.add("item");
+        item.textContent = `${i + 1}`;
+        item.style.height = `${Math.floor(Math.random() * 200) + 100}px`;
+        item.style.display = "flex";
+        item.style.alignItems = "center";
+        item.style.justifyContent = "center";
+        item.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 80%)`;
+        item.style.borderRadius = "8px";
+        this.grid.appendChild(item);
+      }
+    }
+  }
+
+  new MasonryLayout();
+</script>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    padding: 0 16px 32px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .grid {
+    display: grid-lanes;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+  }
+</style>
