@@ -2,6 +2,10 @@
 import Layout from "../../layouts/Layout.astro";
 import Button from "../../components/ui/Button.astro";
 import Title from "../../components/ui/Title.astro";
+import { getCollection } from "astro:content";
+
+const labs = await getCollection("labs");
+console.log(labs);
 ---
 
 <Layout title="001. Emoji Pop Animation">
