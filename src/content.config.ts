@@ -1,6 +1,5 @@
 import { glob } from "astro/loaders";
-import { defineCollection } from "astro:content";
-import { z } from "astro:schema";
+import { defineCollection, z } from "astro:content";
 
 const labs = defineCollection({
   loader: glob({
