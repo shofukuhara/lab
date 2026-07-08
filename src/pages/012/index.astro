@@ -141,13 +141,14 @@ import Layout from "../../layouts/Layout.astro";
     overflow: clip;
   }
   .grid {
-    height: 300vh;
+    height: 400vh;
     background-color: #000;
     overflow: clip;
   }
   .area {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    place-content: center;
     gap: 80px;
     height: 100dvh;
     position: sticky;
@@ -198,44 +199,52 @@ import Layout from "../../layouts/Layout.astro";
   gsap.registerPlugin(ScrollTrigger);
   class ScrollScaleAnimation {
     private trigger: HTMLElement | null = null;
-    private area: HTMLElement | null = null;
+    private itemList: NodeListOf<HTMLElement>;
     private imageList: NodeListOf<HTMLElement>;
 
     constructor() {
       this.trigger = document.querySelector(".grid");
-      this.area = document.querySelector(".area");
+      this.itemList = document.querySelectorAll(".item");
       this.imageList = document.querySelectorAll("img");
       this.init();
     }
 
     private init() {
       this.scroll();
+      this.windowResize();
+    }
+
+    private windowResize() {
+      window.addEventListener("resize", () => {
+        ScrollTrigger.refresh();
+      });
     }
 
     private scroll() {
-      if (!this.trigger || !this.area) return;
+      if (!this.trigger) return;
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: this.trigger,
           start: "top top",
-          end: "bottom top",
-          // markers: true,
+          end: "center top",
+          markers: true,
           scrub: 1,
+          invalidateOnRefresh: true,
         },
       });
       tl.to(
-        this.imageList,
+        this.itemList,
         {
-          scale: 2,
+          width: () => window.innerWidth,
+          height: () => window.innerHeight,
           duration: 1.5,
         },
         "<",
       );
       tl.to(
-        this.area,
+        this.imageList,
         {
-          scale: 4.5,
-          transformOrigin: "center",
+          scale: 1.5,
           duration: 1.5,
         },
         "<",
