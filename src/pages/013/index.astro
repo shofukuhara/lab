@@ -1,0 +1,147 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="013. Random Emoji Hover">
+  <span data-emoji="">🙂</span>
+  <section class="fv">
+    <Title
+      title="Random Emoji Hover"
+      tags={["javascript", "hover"]}
+      className=""
+    />
+    <h2 class="title">Hover over the items<br />PC Only</h2>
+    <div class="grid" data-emoji-list="">
+      <div class="item">
+        <span class="text">Item 1</span>
+      </div>
+      <div class="item">
+        <span class="text">Item 2</span>
+      </div>
+      <div class="item">
+        <span class="text">Item 3</span>
+      </div>
+    </div>
+  </section>
+  <style>
+    html {
+      cursor: none;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      overflow-y: scroll;
+      max-width: 1280px;
+      padding: 0 16px 32px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    [data-emoji] {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      font-size: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      @media (max-width: 768px) {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+
+    .item {
+      border-radius: 8px;
+      background-color: #f0f0f0;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1/1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 48px;
+      transition: transform 0.3s ease;
+      cursor: none;
+    }
+
+    .title {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 32px;
+      font-weight: 500;
+      color: #888;
+    }
+    .text {
+      font-size: 16px;
+      color: #333;
+    }
+  </style>
+
+  <script>
+    import { gsap } from "gsap";
+    class RandomEmojiHover {
+      gridItem: NodeListOf<HTMLDivElement>;
+      emojiElemnt: HTMLElement | null = null;
+      emojiList: string[] | null = null;
+      constructor() {
+        this.gridItem = document.querySelectorAll<HTMLDivElement>(
+          "[data-emoji-list] .item",
+        );
+        this.emojiElemnt = document.querySelector<HTMLElement>("[data-emoji]");
+        this.emojiList = [
+          "😀",
+          "😃",
+          "😄",
+          "😁",
+          "😆",
+          "😅",
+          "😂",
+          "🤣",
+          "😊",
+          "😇",
+          "🙂",
+          "🙃",
+          "😉",
+        ];
+        this.init();
+      }
+
+      private init() {
+        this.gridItem.forEach((item) => {
+          item.addEventListener("mouseenter", () => {
+            this.createEmoji();
+          });
+          window.addEventListener("mousemove", (event) => {
+            this.updateCursorPosition(event);
+          });
+        });
+      }
+
+      private createEmoji() {
+        if (!this.emojiElemnt || !this.emojiList) return;
+        const randomIndex = Math.floor(Math.random() * this.emojiList.length);
+        const randomEmoji = this.emojiList[randomIndex];
+        this.emojiElemnt.textContent = randomEmoji;
+      }
+
+      private updateCursorPosition(event: MouseEvent) {
+        if (!this.emojiElemnt) return;
+        gsap.set(this.emojiElemnt, {
+          x: event.clientX,
+          y: event.clientY,
+          xPercent: -50,
+          yPercent: -50,
+        });
+      }
+    }
+
+    new RandomEmojiHover();
+  </script>
+</Layout>
