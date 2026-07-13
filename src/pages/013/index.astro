@@ -4,7 +4,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <Layout title="013. Random Emoji Hover">
-  <span data-emoji="">🙂</span>
+  <span data-emoji=""></span>
   <section class="fv">
     <Title
       title="Random Emoji Hover"
@@ -25,9 +25,6 @@ import Layout from "../../layouts/Layout.astro";
     </div>
   </section>
   <style>
-    html {
-      cursor: none;
-    }
     body {
       margin: 0;
       padding: 0;
@@ -51,7 +48,7 @@ import Layout from "../../layouts/Layout.astro";
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      gap: 40px;
       @media (max-width: 768px) {
         grid-template-columns: repeat(1, 1fr);
       }
@@ -90,26 +87,58 @@ import Layout from "../../layouts/Layout.astro";
       gridItem: NodeListOf<HTMLDivElement>;
       emojiElemnt: HTMLElement | null = null;
       emojiList: string[] | null = null;
+      previousIndex: number | null = null;
       constructor() {
         this.gridItem = document.querySelectorAll<HTMLDivElement>(
           "[data-emoji-list] .item",
         );
         this.emojiElemnt = document.querySelector<HTMLElement>("[data-emoji]");
         this.emojiList = [
-          "😀",
-          "😃",
-          "😄",
-          "😁",
-          "😆",
-          "😅",
-          "😂",
-          "🤣",
-          "😊",
-          "😇",
-          "🙂",
-          "🙃",
-          "😉",
+          "👁️",
+          "🫠",
+          "🤯",
+          "👽",
+          "👾",
+          "💀",
+          "☠️",
+          "🤡",
+          "🎃",
+          "🦄",
+          "🦖",
+          "🦑",
+          "🐸",
+          "🐔",
+          "🐙",
+          "🦐",
+          "🍕",
+          "🍣",
+          "🍌",
+          "🌮",
+          "🥦",
+          "🧀",
+          "🫑",
+          "🌶️",
+          "🔥",
+          "⚡",
+          "💥",
+          "✨",
+          "🌈",
+          "🪩",
+          "🧨",
+          "🎲",
+          "🛸",
+          "🚀",
+          "🗿",
+          "🪿",
+          "🦀",
+          "🪼",
+          "🧠",
+          "❤️‍🔥",
+          "🫶",
+          "🫵",
+          "👀",
         ];
+        this.previousIndex = -1;
         this.init();
       }
 
@@ -118,6 +147,9 @@ import Layout from "../../layouts/Layout.astro";
           item.addEventListener("mouseenter", () => {
             this.createEmoji();
           });
+          item.addEventListener("mouseleave", () => {
+            this.mouseLeave();
+          });
           window.addEventListener("mousemove", (event) => {
             this.updateCursorPosition(event);
           });
@@ -125,10 +157,14 @@ import Layout from "../../layouts/Layout.astro";
       }
 
       private createEmoji() {
-        if (!this.emojiElemnt || !this.emojiList) return;
-        const randomIndex = Math.floor(Math.random() * this.emojiList.length);
-        const randomEmoji = this.emojiList[randomIndex];
+        if (!this.emojiElemnt) return;
+        const randomEmoji = this.randomEmoji();
         this.emojiElemnt.textContent = randomEmoji;
+        gsap.to(this.emojiElemnt, {
+          scale: 2,
+          duration: 0.3,
+          ease: "power4.out",
+        });
       }
 
       private updateCursorPosition(event: MouseEvent) {
@@ -138,6 +174,27 @@ import Layout from "../../layouts/Layout.astro";
           y: event.clientY,
           xPercent: -50,
           yPercent: -50,
+        });
+      }
+
+      private randomEmoji() {
+        if (!this.emojiList?.length) return "";
+        let randomIndex: number;
+        do {
+          randomIndex = Math.floor(Math.random() * this.emojiList.length);
+        } while (
+          this.emojiList.length > 1 &&
+          randomIndex === this.previousIndex
+        );
+        this.previousIndex = randomIndex;
+        return this.emojiList[randomIndex];
+      }
+
+      private mouseLeave() {
+        if (!this.emojiElemnt) return;
+        this.emojiElemnt.textContent = "";
+        gsap.set(this.emojiElemnt, {
+          scale: 0,
         });
       }
     }
