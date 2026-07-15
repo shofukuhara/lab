@@ -1,0 +1,69 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="015. Image Mosaic">
+  <section class="fv">
+    <Title
+      title="Image Mosaic"
+      tags={["javascript", "image", "mosaic"]}
+      className="c-title__white c-title__other"
+    />
+    <canvas data-canvas></canvas>
+  </section>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .fv {
+      width: 100%;
+      height: 100svh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000;
+      color: #fff;
+      position: relative;
+    }
+  </style>
+  <script>
+    class ImageMosaic {
+      private canvas: HTMLCanvasElement;
+      private ctx: CanvasRenderingContext2D;
+
+      constructor() {
+        const canvas =
+          document.querySelector<HTMLCanvasElement>("[data-canvas]");
+        if (!canvas) throw new Error("Canvas not found.");
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("2D context not supported.");
+
+        this.canvas = canvas;
+        this.ctx = ctx;
+
+        this.init();
+      }
+
+      private init() {
+        console.log(this.canvas);
+        this.renderingImage();
+      }
+
+      private renderingImage() {
+        const image = new Image();
+        image.src = "./image.png";
+        this.canvas.width = window.innerWidth / 2;
+        this.canvas.height = window.innerHeight / 2;
+        image.onload = () => {
+          this.ctx.drawImage(image, 0, 0);
+        };
+      }
+    }
+
+    new ImageMosaic();
+  </script>
+</Layout>
