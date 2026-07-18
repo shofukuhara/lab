@@ -33,7 +33,7 @@ import Layout from "../../layouts/Layout.astro";
     class ImageMosaic {
       private canvas: HTMLCanvasElement;
       private ctx: CanvasRenderingContext2D;
-
+      private image = new Image();
       constructor() {
         const canvas =
           document.querySelector<HTMLCanvasElement>("[data-canvas]");
@@ -50,17 +50,25 @@ import Layout from "../../layouts/Layout.astro";
 
       private init() {
         console.log(this.canvas);
-        this.renderingImage();
+        this.loadImage();
       }
 
-      private renderingImage() {
-        const image = new Image();
-        image.src = "./image.png";
+      private loadImage() {
+        this.image.src = "./image.png";
+        this.image.onload = () => {
+          this.resizeCanvas();
+          this.draw();
+        };
+      }
+
+      private resizeCanvas() {
         this.canvas.width = window.innerWidth / 2;
         this.canvas.height = window.innerHeight / 2;
-        image.onload = () => {
-          this.ctx.drawImage(image, 0, 0);
-        };
+      }
+
+      private draw() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(this.image, 0, 0);
       }
     }
 
