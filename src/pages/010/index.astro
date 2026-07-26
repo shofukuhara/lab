@@ -3,13 +3,13 @@ import Title from "../../components/ui/Title.astro";
 import Layout from "../../layouts/Layout.astro";
 ---
 
-<Layout title="010. dark mode">
+<Layout title="dark mode">
   <script slot="head" is:inline>
     const theme = localStorage.getItem("theme") ?? "light";
     document.documentElement.setAttribute("data-theme", theme);
     document.querySelector("[data-theme-button]")?.setAttribute("data-theme-button", theme);
   </script>
-  <Title title="dark mode" tags={["css", "javascript", "dark mode"]} />
+  <Title title="dark mode" tags={["css", "javascript", "dark-mode"]} />
   <div class="screen">
     <h1 class="title">Dark Mode Demo</h1>
     <p class="text">
