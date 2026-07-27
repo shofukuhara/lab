@@ -33,6 +33,7 @@ import Layout from "../../layouts/Layout.astro";
     class ImageMosaic {
       private canvas: HTMLCanvasElement;
       private ctx: CanvasRenderingContext2D;
+      private blockSize = 8;
       private image = new Image();
       constructor() {
         const canvas =
@@ -51,6 +52,14 @@ import Layout from "../../layouts/Layout.astro";
       private init() {
         console.log(this.canvas);
         this.loadImage();
+        this.bindEvents();
+      }
+
+      private bindEvents() {
+        window.addEventListener("resize", () => {
+          this.resizeCanvas();
+          this.draw();
+        });
       }
 
       private loadImage() {
@@ -62,13 +71,41 @@ import Layout from "../../layouts/Layout.astro";
       }
 
       private resizeCanvas() {
-        this.canvas.width = window.innerWidth / 2;
-        this.canvas.height = window.innerHeight / 2;
+        const aspect = this.image.width / this.image.height;
+        const width = window.innerWidth / 2;
+        const height = width / aspect;
+        this.canvas.width = width;
+        this.canvas.height = height;
       }
 
       private draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.drawImage(this.image, 0, 0);
+        this.ctx.drawImage(
+          this.image,
+          0,
+          0,
+          this.canvas.width,
+          this.canvas.height,
+        );
+        const imageData = this.ctx.getImageData(
+          0,
+          0,
+          this.canvas.width,
+          this.canvas.height,
+        );
+
+        for (let y = 0; y < this.canvas.height; y += this.blockSize) {
+          for (let x = 0; x < this.canvas.width; x += this.blockSize) {
+            const index = (y * this.canvas.width + x) * 4;
+
+            const r = imageData.data[index];
+            const g = imageData.data[index + 1];
+            const b = imageData.data[index + 2];
+
+            this.ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            this.ctx.fillRect(x, y, this.blockSize, this.blockSize);
+          }
+        }
       }
     }
 
