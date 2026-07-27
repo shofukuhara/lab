@@ -63,7 +63,7 @@ import Layout from "../../layouts/Layout.astro";
       }
 
       private loadImage() {
-        this.image.src = "./image.png";
+        this.image.src = "../image.png";
         this.image.onload = () => {
           this.resizeCanvas();
           this.draw();
