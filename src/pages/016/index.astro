@@ -1,0 +1,232 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Scroll Sticky">
+  <section class="fv">
+    <Title
+      title="Scroll Sticky"
+      tags={["javascript", "gsap", "scrolltrigger"]}
+      className="c-title__white c-title__other"
+    />
+    <div class="box">
+      <span class="text">Scroll</span>
+      <span class="line"></span>
+    </div>
+  </section>
+  <div class="contents" data-trigger>
+    <div class="content" style="--index: 0" data-target>
+      <span class="content__line"></span>
+      <div class="content__inner">
+        <p class="content__num">01</p>
+        <img
+          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+          alt=""
+        />
+      </div>
+    </div>
+    <div class="content" style="--index: 1" data-target>
+      <span class="content__line"></span>
+      <div class="content__inner">
+        <p class="content__num">02</p>
+        <img
+          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+          alt=""
+        />
+      </div>
+    </div>
+    <div class="content" style="--index: 2" data-target>
+      <span class="content__line"></span>
+      <div class="content__inner">
+        <p class="content__num">03</p>
+        <img
+          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+          alt=""
+        />
+      </div>
+    </div>
+    <div class="content" style="--index: 3" data-target>
+      <span class="content__line"></span>
+      <div class="content__inner">
+        <p class="content__num">04</p>
+        <img
+          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+          alt=""
+        />
+      </div>
+    </div>
+    <div class="content" style="--index: 4" data-target>
+      <span class="content__line"></span>
+      <div class="content__inner">
+        <p class="content__num">05</p>
+        <img
+          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+          alt=""
+        />
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <p class="end">END</p>
+  </div>
+</Layout>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .fv {
+    width: 100%;
+    height: 100svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    color: #fff;
+    position: relative;
+  }
+  .box {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .line {
+    width: 1px;
+    height: 40px;
+    display: block;
+    background-color: #fff;
+    animation: scroll 2s infinite;
+  }
+  @keyframes scroll {
+    0% {
+      transform: scale(1, 0);
+      transform-origin: 0 0;
+    }
+    50% {
+      transform: scale(1, 1);
+      transform-origin: 0 0;
+    }
+    51% {
+      transform: scale(1, 1);
+      transform-origin: 0 100%;
+    }
+    100% {
+      transform: scale(1, 0);
+      transform-origin: 0 100%;
+    }
+  }
+  .content {
+    width: 100%;
+    height: 100svh;
+    position: sticky;
+    top: calc(80px * var(--index) * 1);
+  }
+  .content__line {
+    background-color: #000;
+    width: 100%;
+    height: 1px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: top left;
+    transform: scaleX(0);
+  }
+  .content__inner {
+    width: 100%;
+    height: 100svh;
+    background-color: #fff;
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  img {
+    width: 300px;
+    aspect-ratio: 1;
+    padding-top: 80px;
+    @media (max-width: 768px) {
+      width: 200px;
+    }
+  }
+
+  .content__num {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+  }
+  .section {
+    width: 100%;
+    height: 100vh;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .end {
+    color: #fff;
+    font-size: 32px;
+  }
+</style>
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+  class ScrollSticky {
+    constructor() {
+      this.set();
+      this.sticky();
+    }
+
+    private set() {
+      const img = document.querySelectorAll("img");
+      gsap.set(img, {
+        autoAlpha: 0,
+      });
+    }
+
+    private sticky() {
+      gsap.utils.toArray<Element>("[data-target]").forEach((target) => {
+        const img = target.querySelector("img");
+        const line = target.querySelector(".content__line");
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: target,
+              start: "top center",
+              end: "center center",
+              scrub: 1,
+              // markers: true,
+            },
+          })
+          .to(
+            img,
+            {
+              autoAlpha: 1,
+              duration: 1,
+              ease: "power1.out",
+            },
+            "<",
+          )
+          .to(
+            line,
+            {
+              transform: "scaleX(1)",
+              duration: 1,
+              ease: "power1.out",
+            },
+            "<",
+          );
+      });
+    }
+  }
+  new ScrollSticky();
+</script>
