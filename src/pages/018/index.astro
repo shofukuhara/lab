@@ -45,7 +45,7 @@ const slides = [
   <section class="fv">
     <Title
       title="Circle Carousel"
-      tags={["javascript", "animation", "variable-font"]}
+      tags={["javascript", "animation", "gsap", "draggable"]}
       className="c-title__white c-title__other"
     />
     <div class="circle">
@@ -70,7 +70,7 @@ const slides = [
   }
   .fv {
     width: 100%;
-    height: 100svh;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -87,15 +87,25 @@ const slides = [
   }
   .carousel {
     position: relative;
-    width: 50vw;
-    height: 50vw;
+    width: 38vw;
+    height: 38vw;
+
+    @media (max-width: 768px) {
+      width: 90vw;
+      height: 90vw;
+    }
   }
   .slide {
-    width: 20vw;
-    height: 20vw;
+    width: 15vw;
+    height: 15vw;
     aspect-ratio: 1/1;
     border-radius: 50%;
     overflow: hidden;
+    opacity: 0;
+    @media (max-width: 768px) {
+      width: 30vw;
+      height: 30vw;
+    }
   }
   .slide img {
     width: 100%;
@@ -108,8 +118,9 @@ const slides = [
   import { Draggable } from "gsap/Draggable";
   gsap.registerPlugin(Draggable);
   class CircleCarousel {
-    private slides: NodeListOf<HTMLLIElement> | null = null;
+    private slides: NodeListOf<HTMLLIElement>;
     private carousel: HTMLDivElement | null = null;
+    private rotation = 0;
     constructor() {
       this.carousel = document.querySelector<HTMLDivElement>(".carousel");
       this.slides = document.querySelectorAll<HTMLLIElement>(".slide");
@@ -117,26 +128,33 @@ const slides = [
       this.init();
     }
 
-    init() {
+    private init() {
+      this.fade();
       this.circlePosition();
-      // this.rotate();
       this.bindDrag();
+    }
 
-      window.addEventListener("resize", () => {
-        this.circlePosition();
+    private fade() {
+      gsap.to(this.slides, {
+        opacity: 1,
+        duration: 1,
+        ease: "power2.inOut",
+        stagger: {
+          each: 0.1,
+          from: "start",
+        },
       });
     }
 
     private circlePosition() {
-      if (!this.slides) return;
-      const radius = 300;
+      const isMobile = window.innerWidth <= 768;
+      const radius = isMobile ? 600 : 300;
       const angle = 360 / this.slides.length;
       this.slides.forEach((slide, index) => {
         const currentAngle = index * angle;
         const radian = (currentAngle * Math.PI) / 180;
-
-        const x = Math.sin(radian) * radius;
-        const y = -Math.cos(radian) * radius;
+        const x = Math.sin(radian) * radius * 0.06 + "vw";
+        const y = -Math.cos(radian) * radius * 0.06 + "vw";
 
         gsap.set(slide, {
           position: "absolute",
@@ -155,17 +173,34 @@ const slides = [
 
       const angle = 360 / this.slides.length;
 
+      this.rotation += angle;
+
       gsap.to(this.carousel, {
-        rotation: angle,
+        rotation: this.rotation,
         duration: 1,
+      });
+
+      this.slides.forEach((slide) => {
+        gsap.to(slide, {
+          rotation: -this.rotation,
+          duration: 1,
+        });
       });
     }
 
     private bindDrag() {
       if (!this.carousel) return;
-
       Draggable.create(this.carousel, {
         type: "rotation",
+        inertia: true,
+        onDrag: () => {
+          const rotation = gsap.getProperty(this.carousel, "rotation");
+          this.slides.forEach((slide) => {
+            gsap.set(slide, {
+              rotation: -Number(rotation),
+            });
+          });
+        },
       });
     }
   }
