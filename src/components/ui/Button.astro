@@ -129,6 +129,26 @@ const {
     color: #555;
   }
 
+  .c-button--red {
+    background-color: #c41e1e;
+    border: 1px solid transparent;
+    color: #000;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .c-button--red:hover:not(:disabled) {
+    background-color: #000;
+    color: #c41e1e;
+    border-color: #c41e1e;
+  }
+
+  .c-button--red:focus-visible {
+    outline: 2px solid #ff6b6b;
+    outline-offset: 2px;
+  }
+
   .c-button--other:hover:not(:disabled) {
     background-color: #fff;
   }

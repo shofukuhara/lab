@@ -1,0 +1,172 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+import Button from "../../components/ui/Button.astro";
+---
+
+<Layout title="Horror Movie List">
+  <Title
+    title="Horror Movie List"
+    tags={["javascript", "animation", "gsap", "draggable"]}
+    className="c-title__white c-title__other"
+  />
+  <div class="content">
+    <div class="list" data-movie-list=""></div>
+    <div class="button">
+      <Button
+        type="button"
+        class:list={["c-button--red", "c-button--lg"]}
+        data-movie-trigger="">ホラー映画を表示</Button
+      >
+    </div>
+  </div>
+</Layout>
+
+<style>
+  body {
+    background-color: #000;
+    color: #fff;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  :global(a) {
+    text-decoration: none;
+  }
+  .content {
+    position: relative;
+    padding: 0 24px;
+    top: 180px;
+  }
+  .list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  :global(.item) {
+    background-color: rgb(58, 20, 20, 0.5);
+    border: 10px solid rgb(58, 20, 20, 1);
+    display: grid;
+  }
+
+  :global(.image) {
+    order: 1;
+    width: 100%;
+    height: auto;
+    grid-area: 1/1;
+    .i {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  :global(.textarea) {
+    order: 2;
+    display: none;
+    align-items: flex-end;
+    padding: 16px;
+    grid-area: 1/1;
+    color: #fff;
+    background-color: rgba(58, 20, 20, 0.8);
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      line-break: strict;
+    }
+  }
+  .button {
+    display: flex;
+    justify-content: center;
+    padding: 80px 0;
+  }
+</style>
+<script>
+  type Movie = {
+    id: number;
+    title: string;
+    poster_path: string;
+    release_date: string;
+  };
+
+  type MovieApiResponse = {
+    results: Movie[];
+  };
+
+  class MovieFetcher {
+    private apiKey: string;
+    private movieList: HTMLElement | null;
+    private trigger: HTMLButtonElement | null;
+    private baseUrl: string = "https://api.themoviedb.org/3";
+    private currentPage = 1;
+
+    constructor() {
+      this.apiKey = import.meta.env.PUBLIC_MOVIE_API_KEY;
+      this.movieList = document.querySelector("[data-movie-list]");
+      this.trigger = document.querySelector("[data-movie-trigger]");
+      this.init();
+    }
+
+    private init() {
+      if (this.trigger) {
+        this.trigger.addEventListener("click", () => {
+          this.currentPage++;
+          this.fetchMovies(this.currentPage);
+        });
+      }
+      window.addEventListener("DOMContentLoaded", () => {
+        this.fetchMovies();
+      });
+    }
+
+    private async fetchMovies(page: number = 1) {
+      try {
+        const response = await fetch(
+          `${this.baseUrl}/discover/movie?api_key=${this.apiKey}&with_genres=27&page=${page}&include_adult=false&certification_country=JP&certification.lte=PG-12`,
+        );
+
+        // 失敗
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        this.renderMovies(data.results);
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      }
+    }
+
+    private renderMovies(movies: Movie[]) {
+      movies.forEach((movie) => {
+        const movieElement = this.createMovieElement(movie);
+        this.movieList?.appendChild(movieElement);
+      });
+    }
+
+    private createMovieElement(movie: Movie) {
+      const movieElement = document.createElement("a");
+      movieElement.href = `https://www.themoviedb.org/movie/${movie.id}`;
+      movieElement.target = "_blank";
+      movieElement.rel = "noopener noreferrer";
+      movieElement.className = "item";
+      movieElement.innerHTML = `
+        <div class="image">
+          <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" loading="lazy" alt="${movie.title}のポスター" class="i">
+        </div>
+        <div class="textarea">
+          <h3 class="title">${movie.title}</h3>
+          <p class="date">${movie.release_date}</p>
+        </div>
+      `;
+      return movieElement;
+    }
+  }
+  new MovieFetcher();
+</script>
