@@ -64,23 +64,6 @@ import Button from "../../components/ui/Button.astro";
       object-fit: cover;
     }
   }
-  :global(.textarea) {
-    order: 2;
-    display: none;
-    align-items: flex-end;
-    padding: 16px;
-    grid-area: 1/1;
-    color: #fff;
-    background-color: rgba(58, 20, 20, 0.8);
-    .title {
-      font-size: 16px;
-      font-weight: bold;
-      line-height: 1.2;
-      overflow-wrap: anywhere;
-      word-break: normal;
-      line-break: strict;
-    }
-  }
   .button {
     display: flex;
     justify-content: center;
@@ -93,11 +76,8 @@ import Button from "../../components/ui/Button.astro";
     title: string;
     poster_path: string;
     release_date: string;
+    vote_average: number;
   };
-
-  // type MovieApiResponse = {
-  //   results: Movie[];
-  // };
 
   class MovieFetcher {
     private apiKey: string;
@@ -159,10 +139,6 @@ import Button from "../../components/ui/Button.astro";
       movieElement.innerHTML = `
         <div class="image">
           <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" loading="lazy" alt="${movie.title}のポスター" class="i">
-        </div>
-        <div class="textarea">
-          <h3 class="title">${movie.title}</h3>
-          <p class="date">${movie.release_date}</p>
         </div>
       `;
       return movieElement;
