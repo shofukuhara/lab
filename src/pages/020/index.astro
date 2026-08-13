@@ -59,36 +59,12 @@ import Button from "../../components/ui/Button.astro";
         this.init();
       }
 
-      init() {
+      private init() {
         this.bindEvents();
-        if (!this.canvas) return;
-        const tileWidth = this.canvas.width / this.columns;
-        const tileHeight = this.canvas.height / this.rows;
-        this.image.onload = () => {
-          const sourceTileWidth = this.image.width / this.columns;
-          const sourceTileHeight = this.image.height / this.rows;
-
-          for (let x = 0; x < this.columns; x++) {
-            const sourceX = x * sourceTileWidth;
-            const tileX = x * tileWidth;
-            for (let y = 0; y < this.rows; y++) {
-              const sourceY = y * sourceTileHeight;
-              const tileY = y * tileHeight;
-              this.ctx?.drawImage(
-                this.image,
-                sourceX,
-                sourceY,
-                sourceTileWidth,
-                sourceTileHeight,
-                tileX,
-                tileY,
-                tileWidth,
-                tileHeight,
-              );
-            }
-          }
-        };
         this.image.src = this.path;
+        this.image.onload = () => {
+          this.draw();
+        };
       }
 
       private bindEvents() {
@@ -100,6 +76,34 @@ import Button from "../../components/ui/Button.astro";
         if (!this.canvas) return;
         this.canvas.width = window.innerWidth / 3;
         this.canvas.height = window.innerHeight / 3;
+      }
+
+      private draw() {
+        if (!this.ctx || !this.canvas) return;
+        const tileWidth = this.canvas.width / this.columns;
+        const tileHeight = this.canvas.height / this.rows;
+        const sourceTileWidth = this.image.width / this.columns;
+        const sourceTileHeight = this.image.height / this.rows;
+
+        for (let x = 0; x < this.columns; x++) {
+          const sourceX = x * sourceTileWidth;
+          const tileX = x * tileWidth;
+          for (let y = 0; y < this.rows; y++) {
+            const sourceY = y * sourceTileHeight;
+            const tileY = y * tileHeight;
+            this.ctx.drawImage(
+              this.image,
+              sourceX,
+              sourceY,
+              sourceTileWidth,
+              sourceTileHeight,
+              tileX,
+              tileY,
+              tileWidth,
+              tileHeight,
+            );
+          }
+        }
       }
     }
     new Flip();
