@@ -1,0 +1,107 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+import Button from "../../components/ui/Button.astro";
+---
+
+<Layout title="Image Flip Transition">
+  <section class="fv">
+    <Title
+      title="Image Flip Transition"
+      tags={["typescript", "canvas", "animation"]}
+      className="c-title__white c-title__other"
+    />
+    <div class="content">
+      <canvas data-canvas></canvas>
+      <Button
+        type="button"
+        class:list={["c-button--secondary", "c-button--lg"]}
+        data-movie-trigger="">クリック</Button
+      >
+    </div>
+  </section>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .fv {
+      width: 100%;
+      height: 100svh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000;
+      color: #fff;
+      position: relative;
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+  </style>
+  <script>
+    class Flip {
+      private canvas: HTMLCanvasElement | null = null;
+      private ctx: CanvasRenderingContext2D | null = null;
+      private image = new Image();
+      private path = "../image.png";
+      private columns = 10;
+      private rows = 10;
+      constructor() {
+        this.canvas =
+          document.querySelector<HTMLCanvasElement>("[data-canvas]");
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext("2d");
+        this.init();
+      }
+
+      init() {
+        this.bindEvents();
+        if (!this.canvas) return;
+        const tileWidth = this.canvas.width / this.columns;
+        const tileHeight = this.canvas.height / this.rows;
+        this.image.onload = () => {
+          const sourceTileWidth = this.image.width / this.columns;
+          const sourceTileHeight = this.image.height / this.rows;
+
+          for (let x = 0; x < this.columns; x++) {
+            const sourceX = x * sourceTileWidth;
+            const tileX = x * tileWidth;
+            for (let y = 0; y < this.rows; y++) {
+              const sourceY = y * sourceTileHeight;
+              const tileY = y * tileHeight;
+              this.ctx?.drawImage(
+                this.image,
+                sourceX,
+                sourceY,
+                sourceTileWidth,
+                sourceTileHeight,
+                tileX,
+                tileY,
+                tileWidth,
+                tileHeight,
+              );
+            }
+          }
+        };
+        this.image.src = this.path;
+      }
+
+      private bindEvents() {
+        this.sizeCanvas();
+        window.addEventListener("resize", this.sizeCanvas.bind(this));
+      }
+
+      private sizeCanvas() {
+        if (!this.canvas) return;
+        this.canvas.width = window.innerWidth / 3;
+        this.canvas.height = window.innerHeight / 3;
+      }
+    }
+    new Flip();
+  </script>
+</Layout>
