@@ -16,7 +16,7 @@ import Button from "../../components/ui/Button.astro";
       <Button
         type="button"
         class:list={["c-button--secondary", "c-button--lg"]}
-        data-movie-trigger="">クリック</Button
+        data-canvas-trigger="">クリック</Button
       >
     </div>
   </section>
@@ -43,69 +43,102 @@ import Button from "../../components/ui/Button.astro";
       gap: 24px;
     }
   </style>
-  <script>
-    class Flip {
-      private canvas: HTMLCanvasElement | null = null;
-      private ctx: CanvasRenderingContext2D | null = null;
-      private image = new Image();
-      private path = "../image.png";
-      private columns = 10;
-      private rows = 10;
-      constructor() {
-        this.canvas =
-          document.querySelector<HTMLCanvasElement>("[data-canvas]");
-        if (!this.canvas) return;
-        this.ctx = this.canvas.getContext("2d");
-        this.init();
-      }
+</Layout>
+<script>
+  interface Tile {
+    x: number;
+    y: number;
+    rotation: number;
+  }
+  class Flip {
+    private canvas: HTMLCanvasElement | null = null;
+    private ctx: CanvasRenderingContext2D | null = null;
+    private buttton: HTMLButtonElement | null = null;
+    private image = new Image();
+    private path = "../image.png";
+    private columns = 10;
+    private rows = 10;
+    private rotation = 0;
+    constructor() {
+      this.canvas = document.querySelector<HTMLCanvasElement>("[data-canvas]");
+      this.buttton = document.querySelector<HTMLButtonElement>(
+        "[data-canvas-trigger]",
+      );
+      if (!this.canvas) return;
+      this.ctx = this.canvas.getContext("2d");
+      this.init();
+    }
 
-      private init() {
-        this.bindEvents();
-        this.image.src = this.path;
-        this.image.onload = () => {
-          this.draw();
-        };
-      }
+    private init() {
+      this.bindEvents();
+      this.image.src = this.path;
+      this.image.onload = () => {
+        this.draw();
+      };
+    }
 
-      private bindEvents() {
-        this.sizeCanvas();
-        window.addEventListener("resize", this.sizeCanvas.bind(this));
-      }
+    private bindEvents() {
+      this.sizeCanvas();
+      window.addEventListener("resize", this.sizeCanvas.bind(this));
+      if (!this.buttton) return;
+      this.buttton.addEventListener("click", () => {
+        this.rotation = 0;
+        this.flip();
+      });
+    }
 
-      private sizeCanvas() {
-        if (!this.canvas) return;
-        this.canvas.width = window.innerWidth / 3;
-        this.canvas.height = window.innerHeight / 3;
-      }
+    private sizeCanvas() {
+      if (!this.canvas) return;
+      this.canvas.width = window.innerWidth / 3;
+      this.canvas.height = window.innerHeight / 3;
+    }
 
-      private draw() {
-        if (!this.ctx || !this.canvas) return;
-        const tileWidth = this.canvas.width / this.columns;
-        const tileHeight = this.canvas.height / this.rows;
-        const sourceTileWidth = this.image.width / this.columns;
-        const sourceTileHeight = this.image.height / this.rows;
+    private draw() {
+      if (!this.ctx || !this.canvas) return;
+      const tileWidth = this.canvas.width / this.columns;
+      const tileHeight = this.canvas.height / this.rows;
+      const sourceTileWidth = this.image.width / this.columns;
+      const sourceTileHeight = this.image.height / this.rows;
 
-        for (let x = 0; x < this.columns; x++) {
-          const sourceX = x * sourceTileWidth;
-          const tileX = x * tileWidth;
-          for (let y = 0; y < this.rows; y++) {
-            const sourceY = y * sourceTileHeight;
-            const tileY = y * tileHeight;
-            this.ctx.drawImage(
-              this.image,
-              sourceX,
-              sourceY,
-              sourceTileWidth,
-              sourceTileHeight,
-              tileX,
-              tileY,
-              tileWidth,
-              tileHeight,
-            );
-          }
+      for (let x = 0; x < this.columns; x++) {
+        const sourceX = x * sourceTileWidth;
+        const tileX = x * tileWidth;
+        for (let y = 0; y < this.rows; y++) {
+          const sourceY = y * sourceTileHeight;
+          const tileY = y * tileHeight;
+          this.ctx.save();
+
+          this.ctx.translate(tileX + tileWidth / 2, tileY + tileHeight / 2);
+          this.ctx.scale(Math.cos(this.rotation), 1);
+          this.ctx.drawImage(
+            this.image,
+            sourceX,
+            sourceY,
+            sourceTileWidth,
+            sourceTileHeight,
+            -tileWidth / 2,
+            -tileHeight / 2,
+            tileWidth,
+            tileHeight,
+          );
+          this.ctx.restore();
         }
       }
     }
-    new Flip();
-  </script>
-</Layout>
+
+    private flip() {
+      const animate = () => {
+        this.rotation += 0.05;
+
+        this.draw();
+
+        if (this.rotation < Math.PI) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      animate();
+    }
+  }
+  new Flip();
+</script>
