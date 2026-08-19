@@ -73,7 +73,7 @@ import Button from "../../components/ui/Button.astro";
       this.bindEvents();
       this.image.src = this.path;
       this.image.onload = () => {
-        this.draw();
+        // this.draw();
       };
     }
 
@@ -109,18 +109,21 @@ import Button from "../../components/ui/Button.astro";
           this.ctx.save();
 
           this.ctx.translate(tileX + tileWidth / 2, tileY + tileHeight / 2);
-          this.ctx.scale(Math.cos(this.rotation), 1);
+
+          const width = tileWidth * Math.abs(Math.cos(this.rotation));
+
           this.ctx.drawImage(
             this.image,
             sourceX,
             sourceY,
             sourceTileWidth,
             sourceTileHeight,
-            -tileWidth / 2,
+            -width / 2,
             -tileHeight / 2,
-            tileWidth,
+            width,
             tileHeight,
           );
+
           this.ctx.restore();
         }
       }
