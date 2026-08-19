@@ -1,22 +1,22 @@
 ---
+import Button from "../../components/ui/Button.astro";
 import Title from "../../components/ui/Title.astro";
 import Layout from "../../layouts/Layout.astro";
-import Button from "../../components/ui/Button.astro";
 ---
 
 <Layout title="Image Flip Transition">
   <section class="fv">
     <Title
       title="Image Flip Transition"
-      tags={["typescript", "canvas", "animation"]}
+      tags={["typescript", "gsap", "animation"]}
       className="c-title__white c-title__other"
     />
     <div class="content">
-      <canvas data-canvas></canvas>
+      <div data-grid></div>
       <Button
         type="button"
         class:list={["c-button--secondary", "c-button--lg"]}
-        data-canvas-trigger="">クリック</Button
+        data-trigger="">クリック</Button
       >
     </div>
   </section>
@@ -42,106 +42,84 @@ import Button from "../../components/ui/Button.astro";
       align-items: center;
       gap: 24px;
     }
+    [data-grid] {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      width: 340px;
+      height: 340px;
+    }
+
+    :global([data-tile]) {
+      background-image: url("../image.png");
+      background-size: 340px 340px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
   </style>
-</Layout>
-<script>
-  interface Tile {
-    x: number;
-    y: number;
-    rotation: number;
-  }
-  class Flip {
-    private canvas: HTMLCanvasElement | null = null;
-    private ctx: CanvasRenderingContext2D | null = null;
-    private buttton: HTMLButtonElement | null = null;
-    private image = new Image();
-    private path = "../image.png";
-    private columns = 10;
-    private rows = 10;
-    private rotation = 0;
-    constructor() {
-      this.canvas = document.querySelector<HTMLCanvasElement>("[data-canvas]");
-      this.buttton = document.querySelector<HTMLButtonElement>(
-        "[data-canvas-trigger]",
-      );
-      if (!this.canvas) return;
-      this.ctx = this.canvas.getContext("2d");
-      this.init();
-    }
+  <script>
+    import { gsap } from "gsap";
+    class FlipTransition {
+      private grid: HTMLElement | null = null;
+      private columns = 10;
+      private rows = 10;
 
-    private init() {
-      this.bindEvents();
-      this.image.src = this.path;
-      this.image.onload = () => {
-        // this.draw();
-      };
-    }
+      constructor() {
+        this.grid = document.querySelector<HTMLElement>("[data-grid]");
 
-    private bindEvents() {
-      this.sizeCanvas();
-      window.addEventListener("resize", this.sizeCanvas.bind(this));
-      if (!this.buttton) return;
-      this.buttton.addEventListener("click", () => {
-        this.rotation = 0;
-        this.flip();
-      });
-    }
+        if (!this.grid) return;
 
-    private sizeCanvas() {
-      if (!this.canvas) return;
-      this.canvas.width = window.innerWidth / 3;
-      this.canvas.height = window.innerHeight / 3;
-    }
+        this.init();
+        this.events();
+      }
 
-    private draw() {
-      if (!this.ctx || !this.canvas) return;
-      const tileWidth = this.canvas.width / this.columns;
-      const tileHeight = this.canvas.height / this.rows;
-      const sourceTileWidth = this.image.width / this.columns;
-      const sourceTileHeight = this.image.height / this.rows;
+      private init() {
+        this.createTiles();
+      }
 
-      for (let x = 0; x < this.columns; x++) {
-        const sourceX = x * sourceTileWidth;
-        const tileX = x * tileWidth;
+      private events() {
+        const trigger = document.querySelector<HTMLElement>("[data-trigger]");
+
+        if (!trigger) return;
+
+        trigger.addEventListener("click", () => {
+          this.animateTiles();
+        });
+      }
+
+      private createTiles() {
+        if (!this.grid) return;
+
         for (let y = 0; y < this.rows; y++) {
-          const sourceY = y * sourceTileHeight;
-          const tileY = y * tileHeight;
-          this.ctx.save();
+          for (let x = 0; x < this.columns; x++) {
+            const tile = document.createElement("div");
 
-          this.ctx.translate(tileX + tileWidth / 2, tileY + tileHeight / 2);
+            tile.dataset.tile = "";
+            const tileWidth = 340 / this.columns;
+            const tileHeight = 340 / this.rows;
+            tile.style.backgroundPosition = `${-x * tileWidth}px ${-y * tileHeight}px`;
 
-          const width = tileWidth * Math.abs(Math.cos(this.rotation));
-
-          this.ctx.drawImage(
-            this.image,
-            sourceX,
-            sourceY,
-            sourceTileWidth,
-            sourceTileHeight,
-            -width / 2,
-            -tileHeight / 2,
-            width,
-            tileHeight,
-          );
-
-          this.ctx.restore();
+            this.grid.appendChild(tile);
+          }
         }
+      }
+
+      private animateTiles() {
+        if (!this.grid) return;
+
+        const tiles = this.grid.querySelectorAll<HTMLElement>("[data-tile]");
+        gsap.set(tiles, { rotationY: 0 });
+        gsap.to(tiles, {
+          duration: 1,
+          rotationY: 360,
+          ease: "power1.inOut",
+          stagger: {
+            amount: 0.5,
+            from: "center",
+          },
+        });
       }
     }
 
-    private flip() {
-      const animate = () => {
-        this.rotation += 0.05;
-
-        this.draw();
-
-        if (this.rotation < Math.PI) {
-          requestAnimationFrame(animate);
-        }
-      };
-
-      animate();
-    }
-  }
-  new Flip();
-</script>
+    new FlipTransition();
+  </script>
+</Layout>
