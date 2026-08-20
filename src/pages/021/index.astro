@@ -1,0 +1,122 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="SVG Morph Animation">
+  <section class="fv">
+    <Title
+      title="SVG Morph Animation"
+      tags={["typescript", "gsap", "animation"]}
+      className="c-title__white c-title__other"
+    />
+    <svg
+      width="300"
+      height="300"
+      viewBox="0 0 120 120"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      id="svg"
+    >
+      <path
+        id="circle"
+        d="M120 60C120 93.1371 93.1371 120 60 120C26.8629 120 0 93.1371 0 60C0 26.8629 26.8629 0 60 0C93.1371 0 120 26.8629 120 60Z"
+        fill="blue"></path>
+      <path
+        id="star"
+        d="M60 0L74.8328 44.8681L120 45.8359L84 74.5337L97.082 120L60 92.8681L22.918 120L36 74.5337L0 45.8359L45.1672 44.8681L60 0Z"
+        fill="#2196F2"
+        style="opacity: 0;"></path>
+      <path
+        id="square"
+        d="M0 24C0 10.7452 10.7452 0 24 0H96C109.255 0 120 10.7452 120 24V96C120 109.255 109.255 120 96 120H24C10.7452 120 0 109.255 0 96V24Z"
+        fill="#FFC208"
+        style="opacity: 0;"></path>
+      <path
+        id="triangle"
+        d="M60 0L120 120H0L60 0Z"
+        fill="#9C26B0"
+        style="opacity: 0;"></path>
+      <path
+        id="hexagon"
+        d="M60 0L74.9247 23.9687L102.426 17.5736L96.0313 45.0753L120 60L96.0313 74.9247L102.426 102.426L74.9247 96.0313L60 120L45.0753 96.0313L17.5736 102.426L23.9687 74.9247L0 60L23.9687 45.0753L17.5736 17.5736L45.0753 23.9687L60 0Z"
+        fill="#00BDD4"
+        style="opacity: 0;"></path>
+    </svg>
+  </section>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .fv {
+      width: 100%;
+      height: 100svh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000;
+      color: #fff;
+      position: relative;
+    }
+    svg {
+      max-height: 500px;
+      max-width: 500px;
+      overflow: visible;
+    }
+  </style>
+  <script>
+    import gsap from "gsap";
+    import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+    gsap.registerPlugin(MorphSVGPlugin);
+    class svgMorph {
+      private svg: SVGSVGElement;
+      private circle: SVGPathElement;
+      private star: SVGPathElement;
+      private square: SVGPathElement;
+      private triangle: SVGPathElement;
+      private hexagon: SVGPathElement;
+
+      constructor() {
+        this.svg = document.getElementById("svg") as unknown as SVGSVGElement;
+        this.circle = document.getElementById(
+          "circle",
+        ) as unknown as SVGPathElement;
+        this.star = document.getElementById(
+          "star",
+        ) as unknown as SVGPathElement;
+        this.square = document.getElementById(
+          "square",
+        ) as unknown as SVGPathElement;
+        this.triangle = document.getElementById(
+          "triangle",
+        ) as unknown as SVGPathElement;
+        this.hexagon = document.getElementById(
+          "hexagon",
+        ) as unknown as SVGPathElement;
+        if (
+          !this.circle ||
+          !this.star ||
+          !this.square ||
+          !this.triangle ||
+          !this.hexagon
+        ) {
+          console.error("One or more SVG elements not found.");
+          return;
+        }
+        this.animate();
+      }
+
+      animate() {
+        const tl = gsap.timeline({ repeat: -1, yoyo: true, duration: 1 });
+        tl.to(this.circle, { duration: 1, morphSVG: this.star })
+          .to(this.circle, { duration: 1, morphSVG: this.square })
+          .to(this.circle, { duration: 1, morphSVG: this.triangle })
+          .to(this.circle, { duration: 1, morphSVG: this.hexagon })
+          .to(this.circle, { duration: 1, morphSVG: this.circle });
+      }
+    }
+    new svgMorph();
+  </script>
+</Layout>
