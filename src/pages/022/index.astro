@@ -1,0 +1,115 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="parallax Animation">
+  <Title
+    title="parallax Animation"
+    tags={["typescript", "gsap", "parallax", "animation"]}
+  />
+  <div class="block">
+    <div class="item" data-parallax="">
+      <img src="https://picsum.photos/400/600?random=1" />
+    </div>
+    <div class="item __right" data-parallax="">
+      <img src="https://picsum.photos/400/600?random=2" />
+    </div>
+    <div class="item" data-parallax="">
+      <img src="https://picsum.photos/400/600?random=3" />
+    </div>
+    <div class="item __right" data-parallax="">
+      <img src="https://picsum.photos/400/600?random=4" />
+    </div>
+    <div class="item" data-parallax="">
+      <img src="https://picsum.photos/400/600?random=5" />
+    </div>
+    <div class="item __right" data-parallax="">
+      <img src="https://picsum.photos/400/600?random=6" />
+    </div>
+    <div class="item" data-parallax="">
+      <img src="https://picsum.photos/400/600?random=7" />
+    </div>
+  </div>
+</Layout>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    padding: 0 16px 32px;
+  }
+  .block {
+    max-width: calc(980 / 1440 * 100vw);
+    margin: 0 auto;
+    padding: 0 calc(40 / 1440 * 100vw);
+    @media (max-width: 768px) {
+      max-width: calc(375 / 400 * 100vw);
+      padding: 0 calc(16 / 400 * 100vw);
+    }
+  }
+  .item {
+    max-width: calc(350 / 1440 * 100vw);
+    height: auto;
+    aspect-ratio: 4/6;
+    overflow: hidden;
+    position: relative;
+    @media (max-width: 768px) {
+      max-width: calc(200 / 400 * 100vw);
+      aspect-ratio: 4/6;
+      margin-top: 100px;
+    }
+    &.__right {
+      margin-left: auto;
+    }
+  }
+  .item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    scale: 1.2;
+  }
+</style>
+<script>
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  class Parallax {
+    private items: NodeListOf<HTMLElement>;
+    constructor() {
+      this.items = document.querySelectorAll<HTMLElement>("[data-parallax]");
+      this.init();
+    }
+
+    private init() {
+      this.scroll();
+      window.addEventListener("load", () => {
+        ScrollTrigger.refresh();
+      });
+    }
+
+    private scroll() {
+      this.items.forEach((item) => {
+        const image = item.querySelector<HTMLImageElement>("img");
+        if (!image) return;
+        gsap.to(image, {
+          yPercent: "-5",
+          scale: 1,
+          scrollTrigger: {
+            trigger: item,
+            scrub: 5,
+            start: "-40% top",
+            end: "bottom top",
+            // markers: true,
+          },
+        });
+      });
+    }
+  }
+  new Parallax();
+</script>
