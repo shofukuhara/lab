@@ -1,0 +1,180 @@
+---
+import Title from "../../components/ui/Title.astro";
+import Layout from "../../layouts/Layout.astro";
+import Button from "../../components/ui/Button.astro";
+const map = 20;
+---
+
+<Layout title="multiple modal control">
+  <Title
+    title="multiple modal control"
+    tags={["typescript", "gsap", "animation"]}
+  />
+  <div class="list">
+    {
+      Array.from({ length: map }).map((_, index) => (
+        <Button
+          type="button"
+          class:list={["c-button--secondary", "c-button--lg"]}
+          data-trigger={index + 1}
+        >
+          モーダル{index + 1}を開く
+        </Button>
+      ))
+    }
+  </div>
+  <dialog data-modal="" class="" style="opacity:0;">
+    {
+      Array.from({ length: map }).map((_, index) => (
+        <div class="item" data-target={index + 1} style="opacity:0;">
+          <img src={`https://picsum.photos/400/600?random=${index + 1}`} />
+          <div class="controls">
+            <Button
+              type="button"
+              class:list={["c-button--secondary", "c-button--lg", "button_1"]}
+              data-prev=""
+            >
+              前のモーダル
+            </Button>
+            <Button
+              type="button"
+              class:list={["c-button--secondary", "c-button--lg", "button_2"]}
+              data-next=""
+            >
+              次のモーダル
+            </Button>
+            <Button
+              type="button"
+              class:list={["c-button--secondary", "c-button--lg", "button_3"]}
+              data-close=""
+            >
+              モーダル{index + 1}を閉じる
+            </Button>
+          </div>
+        </div>
+      ))
+    }
+  </dialog>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      overflow-y: scroll;
+      max-width: 1280px;
+      margin: 0 auto;
+      position: relative;
+      padding: 0 16px 32px;
+    }
+    .list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      @media (max-width: 768px) {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+    dialog {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      position: fixed;
+      inset: 0;
+      border: none;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      &[open] {
+        display: grid;
+      }
+      &::backdrop {
+        background-color: rgba(0, 0, 0, 0);
+      }
+    }
+    .item {
+      grid-area: 1 / 1;
+    }
+    img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 5/6;
+      object-fit: cover;
+      object-position: center;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .button_1 {
+      grid-area: 1 / 1 / 2 / 2;
+    }
+    .button_2 {
+      grid-area: 1 / 2 / 2 / 3;
+    }
+    .button_3 {
+      grid-area: 2 / 1 / 3 / 3;
+    }
+  </style>
+  <script>
+    import { gsap } from "gsap";
+    class ModalController {
+      private modal: HTMLElement | null = null;
+      private trigger: NodeListOf<HTMLElement>;
+      private target: NodeListOf<HTMLElement>;
+
+      constructor() {
+        this.modal = document.querySelector<HTMLElement>("[data-modal]");
+        this.trigger = document.querySelectorAll<HTMLElement>("[data-trigger]");
+        this.target = document.querySelectorAll<HTMLElement>("[data-target]");
+        this.init();
+      }
+      init() {
+        this.open();
+        this.close();
+      }
+
+      open() {
+        this.trigger.forEach((trigger) => {
+          trigger.addEventListener("click", () => {
+            const targetId = trigger.getAttribute("data-trigger");
+            const target = document.querySelector<HTMLElement>(
+              `[data-target="${targetId}"]`,
+            );
+            if (target) {
+              target.closest("dialog")?.showModal();
+              gsap.to(this.modal, {
+                opacity: 1,
+                duration: 0.5,
+              });
+              target.style.opacity = "1";
+            }
+          });
+        });
+      }
+      close() {
+        this.target.forEach((target) => {
+          const closeButton = target.querySelector<HTMLElement>("[data-close]");
+          if (closeButton) {
+            closeButton.addEventListener("click", () => {
+              gsap.to(this.modal, {
+                opacity: 0,
+                duration: 0.5,
+                onComplete: () => {
+                  target.closest("dialog")?.close();
+                },
+              });
+              gsap.set(this.target, {
+                opacity: 0,
+              });
+            });
+          }
+        });
+      }
+    }
+    new ModalController();
+  </script>
+</Layout>
